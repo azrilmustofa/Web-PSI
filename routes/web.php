@@ -19,7 +19,10 @@ Route::middleware('auth')->get('/redirect-role', function () {
         ? redirect()->route('barang.index')
         : redirect()->route('customer.index');
 });
+// Jika sekarang begini:
+Route::get('/admin', [barangcontroller::class, 'index'])->name('barang.index');
 
+// Kamu bisa biarkan saja, asal di barangcontroller sudah ditambah variabel $kategori seperti langkah 1 di atas.
 
 
 Route::get('/', [barangcontroller::class, 'home'])->name('customer.index');

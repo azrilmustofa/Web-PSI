@@ -1,49 +1,73 @@
+<!-- Modal Tambah Barang -->
 <div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-labelledby="modalTambahBarangLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTambahBarangLabel">Tambah Barang</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-lg"> <!-- modal-lg supaya lebih lega -->
+        <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+            
+            <!-- Header dengan warna Hijau Dwijaya Mebel -->
+            <div class="modal-header" style="background-color: #3d5a4a; color: white;">
+                <h5 class="modal-title" id="modalTambahBarangLabel">
+                    <i class="fas fa-plus-circle me-2"></i> Tambah Produk Baru
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form action="{{route('barang.store')}}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('barang.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nama_barang" class="form-label">Nama Barang <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="nama_barang" id="nama_barang" required>
-                    </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <!-- Baris 1: Nama & Kategori -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nama Barang <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="nama_barang" placeholder="Contoh: Kursi Jati Minimalis" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="kategori_id" class="form-label fw-bold">Kategori Produk <span class="text-danger">*</span></label>
+                            <select name="kategori_id" id="kategori_id" class="form-select" required>
+                                <option value="" selected disabled>-- Pilih Kategori (Kursi, Meja, Lemari) --</option>
+                                @foreach($kategori as $k)
+                                    <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="harga" class="form-label">Harga <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="harga" id="harga" required>
-                    </div>
+                        <!-- Baris 2: Harga & Stok -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Harga (Rp) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" class="form-control" name="harga" placeholder="1500000" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Stok <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="stok" placeholder="0" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="bahan" class="form-label">Bahan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="bahan" id="bahan" required>
-                    </div>
+                        <!-- Baris 3: Bahan & Ukuran -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Bahan <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="bahan" placeholder="Contoh: Kayu Jati" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Ukuran <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="ukuran" placeholder="Contoh: 120x60x75 cm" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="ukuran" class="form-label">Ukuran <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="ukuran" id="ukuran" required>
+                        <!-- Baris 4: Upload Gambar -->
+                        <div class="col-12 mb-2">
+                            <label class="form-label fw-bold">Gambar Produk <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" name="gambar" id="gambar" accept="image/*" required>
+                            <div class="form-text text-muted">Format: JPG, JPEG, PNG (Maks. 2MB)</div>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="stok" class="form-label">Stok <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" name="stok" id="stok" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="gambar" class="form-label">Gambar <span class="text-danger">*</span></label>
-                        <input type="file" class="form-control" name="gambar" id="gambar" required>
-                    </div>
-                    
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer" style="background-color: #f8f9fa;">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Batal</button>
+                    <!-- Tombol Simpan dengan warna Hijau yang sama -->
+                    <button type="submit" class="btn btn-primary px-4" style="background-color: #3d5a4a; border: none;">
+                        <i class="fas fa-save me-1"></i> Simpan Data
+                    </button>
                 </div>
             </form>
         </div>
