@@ -32,7 +32,8 @@ Route::get('/', [barangcontroller::class, 'home'])->name('customer.index');
 // Route::get('/contact', [customercontroller::class, 'contact'])->name('customer.contact');
 
 Route::get('/about', [barangcontroller::class, 'about'])->name('customer.about'); 
-Route::get('/shop/{kategori?}', [barangcontroller::class, 'shop'])->name('customer.shop'); 
+Route::get('/shop/{kategori?}', [barangcontroller::class, 'shop'])->name('customer.shop');
+Route::get('/kategori/{slug}', [barangcontroller::class, 'kategori'])->name('customer.kategori');
 Route::get('/contact', [barangcontroller::class, 'contact'])->name('customer.contact'); 
 Route::middleware(['auth','customer'])->group(function () {
      

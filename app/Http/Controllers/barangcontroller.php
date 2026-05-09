@@ -137,10 +137,14 @@ class barangcontroller extends Controller
     {
         $query = barang::query();
 
-        // Filter by kategori dari slug
+        // Filter kategori
         if ($kategori) {
             $query->whereHas('kategori', function($q) use ($kategori) {
-                $q->where('slug', $kategori);
+
+                // ubah slug URL jadi format nama kategori
+                $namaKategori = str_replace('-', ' ', $kategori);
+
+                $q->whereRaw('LOWER(nama_kategori) = ?', [strtolower($namaKategori)]);
             });
         }
 
@@ -174,6 +178,56 @@ class barangcontroller extends Controller
     public function contact()
     {
         return view('customer.contact');
+    }
+
+    public function kategori(Request $request, $slug)
+    {
+        $query = barang::query();
+
+        // kategori utama
+        $kategoriUtama = [
+            'meja',
+            'kursi',
+            'lemari',
+            'tempat tidur',
+            'sofa',
+            'rak',
+            'kitchen set'
+        ];
+
+        // Jika perabot lainnya
+        if ($slug == 'perabot-lainnya') {
+
+            $query->whereHas('kategori', function($q) use ($kategoriUtama) {
+                $q->whereNotIn('nama_kategori', $kategoriUtama);
+            });
+
+        } else {
+
+            // kategori normal
+            $namaKategori = str_replace('-', ' ', $slug);
+
+            $query->whereHas('kategori', function($q) use ($namaKategori) {
+                $q->where('nama_kategori', ucwords($namaKategori));
+            });
+        }
+
+        // Search
+        if ($request->search) {
+            $query->where('nama_barang', 'like', '%' . $request->search . '%');
+        }
+
+        // Sort
+        match($request->sort) {
+            'latest' => $query->latest(),
+            'low'    => $query->orderBy('harga', 'asc'),
+            'high'   => $query->orderBy('harga', 'desc'),
+            default  => $query->orderBy('id', 'asc'),
+        };
+
+        $products = $query->paginate(20);
+
+        return view('customer.shop_cat', compact('products', 'slug'));
     }
 
 

@@ -9,12 +9,8 @@
         <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide2.jpg') }}')"></div>
         <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide3.jpg') }}')"></div>
     </div>
-
-    {{-- Tombol navigasi --}}
     <button class="slider-btn prev" id="prevBtn" aria-label="Previous slide">&#10094;</button>
     <button class="slider-btn next" id="nextBtn" aria-label="Next slide">&#10095;</button>
-
-    {{-- Dots indikator --}}
     <div class="slider-dots" id="sliderDots">
         <span class="dot active" data-index="0"></span>
         <span class="dot" data-index="1"></span>
@@ -29,7 +25,6 @@
 </div>
 @endsection
 
-
 {{-- ===== CONTENT SECTION ===== --}}
 @section('content')
 <div class="untree_co-section product-section before-footer-section">
@@ -38,55 +33,22 @@
 
             @php
             $categories = [
-                [
-                    'nama' => 'Meja',
-                    'gambar' => 'template_customer/images/asset_cat/img_meja.jpg',
-                    'slug' => 'meja'
-                ],
-                [
-                    'nama' => 'Kursi',
-                    'gambar' => 'template_customer/images/asset_cat/img_kursi.jpg',
-                    'slug' => 'kursi'
-                ],
-                [
-                    'nama' => 'Lemari',
-                    'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',
-                    'slug' => 'lemari'
-                ],
-                [
-                    'nama' => 'Tempat Tidur',
-                    'gambar' => 'template_customer/images/asset_cat/img_tmpttdr.jpg',
-                    'slug' => 'tempat-tidur'
-                ],
-                [
-                    'nama' => 'Sofa',
-                    'gambar' => 'template_customer/images/asset_cat/img_sofa.jpg',
-                    'slug' => 'sofa'
-                ],
-                [
-                    'nama' => 'Rak',
-                    'gambar' => 'template_customer/images/asset_cat/img_rak.jpg',
-                    'slug' => 'rak'
-                ],
-                [
-                    'nama' => 'Kitchen Set',
-                    'gambar' => 'template_customer/images/asset_cat/img_dapur.jpg',
-                    'slug' => 'kitchen-set'
-                ],
-                [
-                    'nama' => 'Furniture Custom',
-                    'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',
-                    'slug' => 'furniture-custom'
-                ],
+                ['nama' => 'Meja',             'gambar' => 'template_customer/images/asset_cat/img_meja.jpg',    'slug' => 'meja'],
+                ['nama' => 'Kursi',            'gambar' => 'template_customer/images/asset_cat/img_kursi.jpg',   'slug' => 'kursi'],
+                ['nama' => 'Lemari',           'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',  'slug' => 'lemari'],
+                ['nama' => 'Tempat Tidur',     'gambar' => 'template_customer/images/asset_cat/img_tmpttdr.jpg', 'slug' => 'tempat-tidur'],
+                ['nama' => 'Sofa',             'gambar' => 'template_customer/images/asset_cat/img_sofa.jpg',    'slug' => 'sofa'],
+                ['nama' => 'Rak',              'gambar' => 'template_customer/images/asset_cat/img_rak.jpg',     'slug' => 'rak'],
+                ['nama' => 'Kitchen Set',      'gambar' => 'template_customer/images/asset_cat/img_dapur.jpg',   'slug' => 'kitchen-set'],
+                ['nama' => 'Furniture Custom', 'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',  'slug' => 'furniture-custom'],
             ];
             @endphp
+
             @foreach ($categories as $cat)
             <div class="col-6 col-md-4 col-lg-3">
-                <a class="category-card" href="{{ route('customer.shop', $cat['slug']) }}">
+                <a class="category-card" href="{{ route('customer.kategori', $cat['slug']) }}">
                     <div class="category-img-wrapper">
-                        <img src="{{ asset($cat['gambar']) }}" 
-                             class="category-img" 
-                             alt="{{ $cat['nama'] }}">
+                        <img src="{{ asset($cat['gambar']) }}" class="category-img" alt="{{ $cat['nama'] }}">
                         <div class="category-label">{{ $cat['nama'] }}</div>
                     </div>
                 </a>
@@ -101,8 +63,7 @@
 {{-- ===== ALL PRODUCTS SECTION ===== --}}
 @section('after_content')
 
-{{-- Header All Products --}}
-<div class="section-divider">
+<div class="section-divider" id="all-products">
     <h2>All Products</h2>
 </div>
 
@@ -111,11 +72,10 @@
 
         {{-- Search & Sort Bar --}}
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
-            {{-- Search --}}
             <div class="d-flex align-items-center gap-2">
                 <h5 class="fw-bold text-brown mb-0">Find Your Favourite Products</h5>
             </div>
-            <form method="GET" action="{{ route('customer.index') }}" class="d-flex gap-2">
+            <form method="GET" action="{{ route('customer.shop') }}" class="d-flex gap-2" id="searchForm">
                 <input type="text" name="search" value="{{ request('search') }}"
                     class="form-control search-input" placeholder="Search products...">
                 <button type="submit" class="btn btn-search">SEARCH</button>
@@ -127,11 +87,11 @@
             <p class="text-muted mb-0">
                 Showing {{ $products->firstItem() }}–{{ $products->lastItem() }} of {{ $products->total() }} results
             </p>
-            <form method="GET" action="{{ route('customer.index') }}">
+            <form method="GET" action="{{ route('customer.shop') }}" id="sortForm">
                 @if(request('search'))
                     <input type="hidden" name="search" value="{{ request('search') }}">
                 @endif
-                <select name="sort" class="form-select sort-select" onchange="this.form.submit()">
+                <select name="sort" class="form-select sort-select" id="sortSelect">
                     <option value=""       {{ request('sort') == ''        ? 'selected' : '' }}>Default sorting</option>
                     <option value="latest" {{ request('sort') == 'latest'  ? 'selected' : '' }}>Sort by latest</option>
                     <option value="low"    {{ request('sort') == 'low'     ? 'selected' : '' }}>Sort by price: low to high</option>
@@ -179,6 +139,8 @@
 @push('scripts')
 <script>
     (function () {
+
+        // ===== SLIDER =====
         const slides = document.querySelectorAll('.slide');
         const dots   = document.querySelectorAll('.dot');
         let current  = 0;
@@ -219,6 +181,39 @@
         });
 
         autoPlay();
+
+        // ===== SCROLL TO #all-products SETELAH SEARCH / SORT =====
+
+        // Intercept search form submit
+        const searchForm = document.getElementById('searchForm');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function () {
+                sessionStorage.setItem('scrollToProducts', '1');
+            });
+        }
+
+        // Intercept sort select change → set flag lalu submit form
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function () {
+                sessionStorage.setItem('scrollToProducts', '1');
+                document.getElementById('sortForm').submit();
+            });
+        }
+
+        // Saat halaman load → cek flag, scroll jika ada
+        window.addEventListener('load', function () {
+            if (sessionStorage.getItem('scrollToProducts') === '1') {
+                sessionStorage.removeItem('scrollToProducts');
+                const el = document.getElementById('all-products');
+                if (el) {
+                    setTimeout(function () {
+                        el.scrollIntoView({ behavior: 'smooth' });
+                    }, 300);
+                }
+            }
+        });
+
     })();
 </script>
 @endpush
