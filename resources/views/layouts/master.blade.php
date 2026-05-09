@@ -35,6 +35,7 @@
 
     <div class="container mt-4">
         @yield('content')
+        @yield('after_content')
     </div>
 
     {{-- FOOTER --}}

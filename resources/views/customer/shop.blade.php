@@ -25,7 +25,7 @@
 
 @section('before_content')
 <div class="section-divider">
-    <h2>Best Sellers</h2>
+    <h2>Categories</h2>
 </div>
 @endsection
 
@@ -34,28 +34,143 @@
 @section('content')
 <div class="untree_co-section product-section before-footer-section">
     <div class="container">
-        <div class="row">
-            {{-- Loop Product --}}
-            @foreach ($data as $item)
-            <div class="col-12 col-md-4 col-lg-3 mb-5">
-                <a class="product-item" href="{{ route('customer.shop', $item->id) }}">
-                    <img src="{{ asset('storage/' . $item->gambar) }}" class="img-fluid product-thumbnail">
-                    <h3 class="product-title">{{ $item->nama_barang }}</h3>
-                    <strong class="product-price">
-                        Rp. {{ number_format($item->harga, 0, ',', '.') }}
-                    </strong>
-                    <form action="{{ route('quick.add', $item->id) }}" method="POST" class="text-center mt-2">
-                        @csrf
-                        <button type="submit" class="btn p-0 border-0 bg-transparent">
-                            <span class="icon-cross">
-                                <img src="{{ asset('template_customer/images/cross.svg') }}" class="img-fluid">
-                            </span>
-                        </button>
-                    </form>
+        <div class="row g-4 justify-content-center">
+
+            @php
+            $categories = [
+                [
+                    'nama' => 'Meja',
+                    'gambar' => 'template_customer/images/asset_cat/img_meja.jpg',
+                    'slug' => 'meja'
+                ],
+                [
+                    'nama' => 'Kursi',
+                    'gambar' => 'template_customer/images/asset_cat/img_kursi.jpg',
+                    'slug' => 'kursi'
+                ],
+                [
+                    'nama' => 'Lemari',
+                    'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',
+                    'slug' => 'lemari'
+                ],
+                [
+                    'nama' => 'Tempat Tidur',
+                    'gambar' => 'template_customer/images/asset_cat/img_tmpttdr.jpg',
+                    'slug' => 'tempat-tidur'
+                ],
+                [
+                    'nama' => 'Sofa',
+                    'gambar' => 'template_customer/images/asset_cat/img_sofa.jpg',
+                    'slug' => 'sofa'
+                ],
+                [
+                    'nama' => 'Rak',
+                    'gambar' => 'template_customer/images/asset_cat/img_rak.jpg',
+                    'slug' => 'rak'
+                ],
+                [
+                    'nama' => 'Kitchen Set',
+                    'gambar' => 'template_customer/images/asset_cat/img_dapur.jpg',
+                    'slug' => 'kitchen-set'
+                ],
+                [
+                    'nama' => 'Furniture Custom',
+                    'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',
+                    'slug' => 'furniture-custom'
+                ],
+            ];
+            @endphp
+            @foreach ($categories as $cat)
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="category-card" href="{{ route('customer.shop', $cat['slug']) }}">
+                    <div class="category-img-wrapper">
+                        <img src="{{ asset($cat['gambar']) }}" 
+                             class="category-img" 
+                             alt="{{ $cat['nama'] }}">
+                        <div class="category-label">{{ $cat['nama'] }}</div>
+                    </div>
                 </a>
             </div>
             @endforeach
+
         </div>
+    </div>
+</div>
+@endsection
+
+{{-- ===== ALL PRODUCTS SECTION ===== --}}
+@section('after_content')
+
+{{-- Header All Products --}}
+<div class="section-divider">
+    <h2>All Products</h2>
+</div>
+
+<div class="untree_co-section product-section before-footer-section">
+    <div class="container">
+
+        {{-- Search & Sort Bar --}}
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+            {{-- Search --}}
+            <div class="d-flex align-items-center gap-2">
+                <h5 class="fw-bold text-brown mb-0">Find Your Favourite Products</h5>
+            </div>
+            <form method="GET" action="{{ route('customer.index') }}" class="d-flex gap-2">
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="form-control search-input" placeholder="Search products...">
+                <button type="submit" class="btn btn-search">SEARCH</button>
+            </form>
+        </div>
+
+        {{-- Info & Sort --}}
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+            <p class="text-muted mb-0">
+                Showing {{ $products->firstItem() }}–{{ $products->lastItem() }} of {{ $products->total() }} results
+            </p>
+            <form method="GET" action="{{ route('customer.index') }}">
+                @if(request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+                <select name="sort" class="form-select sort-select" onchange="this.form.submit()">
+                    <option value=""       {{ request('sort') == ''        ? 'selected' : '' }}>Default sorting</option>
+                    <option value="latest" {{ request('sort') == 'latest'  ? 'selected' : '' }}>Sort by latest</option>
+                    <option value="low"    {{ request('sort') == 'low'     ? 'selected' : '' }}>Sort by price: low to high</option>
+                    <option value="high"   {{ request('sort') == 'high'    ? 'selected' : '' }}>Sort by price: high to low</option>
+                </select>
+            </form>
+        </div>
+
+        {{-- Product Grid --}}
+        <div class="row g-4">
+            @forelse ($products as $item)
+            <div class="col-6 col-md-4 col-lg" style="flex: 0 0 20%; max-width: 20%;">
+                <div class="product-card">
+                    <a href="{{ route('customer.shop', $item->id) }}">
+                        <div class="product-img-wrapper">
+                            <img src="{{ asset('storage/' . $item->gambar) }}"
+                                 class="product-img" alt="{{ $item->nama_barang }}">
+                        </div>
+                        <div class="product-info text-center mt-2">
+                            <h6 class="product-name">{{ strtoupper($item->nama_barang) }}</h6>
+                            <p class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</p>
+                        </div>
+                    </a>
+                    <form action="{{ route('quick.add', $item->id) }}" method="POST" class="text-center">
+                        @csrf
+                        <button type="submit" class="btn btn-add-cart w-100">ADD TO CART</button>
+                    </form>
+                </div>
+            </div>
+            @empty
+            <div class="col-12 text-center text-muted py-5">No products found.</div>
+            @endforelse
+        </div>
+
+        {{-- Pagination --}}
+        <div class="d-flex justify-content-center mt-5">
+            {{ $products->appends(request()->query())->links() }}
+        </div>
+
     </div>
 </div>
 @endsection

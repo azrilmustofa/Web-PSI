@@ -133,10 +133,33 @@ class barangcontroller extends Controller
         return view ('barang.pdfbarang', ['dataBarang' => $data]);
     }
 
-    public function shop()
+    public function shop(Request $request, $kategori = null)
     {
-        $data = barang::all();
-        return view('customer.shop',['data' => $data]);
+        $query = barang::query();
+
+        // Filter by kategori dari slug
+        if ($kategori) {
+            $query->whereHas('kategori', function($q) use ($kategori) {
+                $q->where('slug', $kategori);
+            });
+        }
+
+        // Search
+        if ($request->search) {
+            $query->where('nama_barang', 'like', '%' . $request->search . '%');
+        }
+
+        // Sort
+        match($request->sort) {
+            'latest' => $query->latest(),
+            'low'    => $query->orderBy('harga', 'asc'),
+            'high'   => $query->orderBy('harga', 'desc'),
+            default  => $query->orderBy('id', 'asc'),
+        };
+
+        $products = $query->paginate(20);
+
+        return view('customer.shop', compact('products'));
     }
 
     public function home()
