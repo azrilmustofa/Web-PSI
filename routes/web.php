@@ -9,13 +9,21 @@ use App\Models\barang;
 use App\Http\Middleware\admin;
 use App\Http\Middleware\customer;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\CustomOrderController;
 // Ganti Route::post menjadi Route::put
 Route::put('/reset-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 Route::middleware('auth')->get('/redirect-role', function () {
-    return auth()->user()->role === 'admin'
-        ? redirect()->route('barang.index')
-        : redirect()->route('customer.index');
+
+    if(auth()->user()->role == 'admin'){
+        return redirect()->route('barang.index');
+    }
+
+    if(auth()->user()->role == 'kasir'){
+        return redirect()->route('kasir.index');
+    }
+
+    return redirect()->route('customer.index');
+
 });
 // Jika sekarang begini:
 Route::get('/admin', [barangcontroller::class, 'index'])->name('barang.index');
@@ -24,7 +32,8 @@ Route::get('/admin', [barangcontroller::class, 'index'])->name('barang.index');
 
 
 Route::get('/', [barangcontroller::class, 'home'])->name('customer.index');
-
+Route::get('/detail/{id}', [barangcontroller::class, 'detail'])
+    ->name('customer.detail');
 
 // Route::get('/', [customercontroller::class, 'index'])->name('home');
 // Route::get('/shop', [customercontroller::class, 'shop'])->name('customer.shop');
@@ -81,3 +90,13 @@ Route::get('/profile', function () {
 
 // ATAU jika menggunakan Controller (Disarankan)
 // Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+
+Route::middleware(['auth', 'kasir'])->group(function () {
+
+    Route::get('/dashboard-kasir', [CustomOrderController::class, 'index'])
+        ->name('kasir.index');
+
+    Route::post('/custom-order/{id}/status', [CustomOrderController::class, 'status'])
+        ->name('custom.status');
+
+});

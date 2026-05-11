@@ -19,4 +19,6 @@ class detail_pesanan extends Model
     {
         return $this->belongsTo(pesanan::class, 'pesanan_id');
     }
+    
+
 }

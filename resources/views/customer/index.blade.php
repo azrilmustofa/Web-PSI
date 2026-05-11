@@ -41,47 +41,36 @@
 					<!-- End Column 1 -->
 
 					<!-- Start Column 2 -->
+					@foreach($bestSeller as $item)
 					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-						<a class="product-item" href="{{ route('customer.shop')}}">
-							<img src="template_customer/images/product-1.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kursi A</h3>
-							<strong class="product-price">Rp 1.000.000</strong>
+
+						<a class="product-item" href="{{ route('customer.detail', $item->id) }}">
+
+							<img src="{{ asset('storage/'.$item->gambar) }}"
+								class="img-fluid product-thumbnail">
+
+							<h3 class="product-title">
+								{{ $item->nama_barang }}
+							</h3>
+
+							<strong class="product-price">
+								Rp {{ number_format($item->harga,0,',','.') }}
+							</strong>
+
+							<p class="text-muted">
+								Terjual {{ $item->total_terjual }}x
+							</p>
 
 							<span class="icon-cross">
-								<img src="{{asset('template_customer/images/cross.svg')}}" class="img-fluid">
+								<img src="{{ asset('template_customer/images/cross.svg') }}"
+									class="img-fluid">
 							</span>
+
 						</a>
-					</div> 
+
+					</div>
+					@endforeach
 					<!-- End Column 2 -->
-
-					<!-- Start Column 3 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-						<a class="product-item" href="{{ route('customer.shop')}}">
-							<img src="template_customer/images/product-2.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kursi B</h3>
-							<strong class="product-price">Rp 780.000</strong>
-
-							<span class="icon-cross">
-								<img src="{{asset('template_customer/images/cross.svg')}}" class="img-fluid">
-							</span>
-						</a>
-					</div>
-					<!-- End Column 3 -->
-
-					<!-- Start Column 4 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-						<a class="product-item" href="{{ route('customer.shop')}}">
-							<img src="template_customer/images/product-3.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kursi C</h3>
-							<strong class="product-price">Rp 1.200.000</strong>
-
-							<span class="icon-cross">
-								<img src="{{asset('template_customer/images/cross.svg')}}" class="img-fluid">
-							</span>
-						</a>
-					</div>
-					<!-- End Column 4 -->
-
 				</div>
 			</div>
 		</div>

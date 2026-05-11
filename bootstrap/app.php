@@ -10,8 +10,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+
         $middleware->group('admin', [
             \Illuminate\Auth\Middleware\Authenticate::class,
             \App\Http\Middleware\admin::class,
@@ -21,7 +22,14 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Auth\Middleware\Authenticate::class,
             \App\Http\Middleware\customer::class,
         ]);
+
+        $middleware->group('kasir', [
+            \Illuminate\Auth\Middleware\Authenticate::class,
+            \App\Http\Middleware\kasir::class,
+        ]);
+
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

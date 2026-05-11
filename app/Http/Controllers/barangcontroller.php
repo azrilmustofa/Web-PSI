@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\barang;
 use App\Models\Kategori;
+use Illuminate\Support\Facades\DB;
 
 
 class barangcontroller extends Controller
@@ -166,10 +167,33 @@ class barangcontroller extends Controller
         return view('customer.shop', compact('products'));
     }
 
-    public function home()
-    {
-        return view('customer.index');
-    }
+   public function home()
+{
+    $bestSeller = barang::select(
+            'barang.*',
+            DB::raw('SUM(detail_pesanan.jumlah) as total_terjual')
+        )
+        ->join('detail_pesanan', 'barang.id', '=', 'detail_pesanan.barang_id')
+        ->join('pesanan', 'detail_pesanan.pesanan_id', '=', 'pesanan.id')
+        ->where('pesanan.status', 1)
+        ->groupBy(
+            'barang.id',
+            'barang.nama_barang',
+            'barang.kategori_id',
+            'barang.harga',
+            'barang.bahan',
+            'barang.ukuran',
+            'barang.stok',
+            'barang.gambar',
+            'barang.created_at',
+            'barang.updated_at'
+        )
+        ->orderByDesc('total_terjual')
+        ->take(3)
+        ->get();
+
+    return view('customer.index', compact('bestSeller'));
+}   
     public function about()
     {
         return view('customer.about');
