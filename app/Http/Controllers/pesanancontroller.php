@@ -14,9 +14,10 @@ class pesanancontroller extends Controller
     // ===============================
     // TAMBAH CEPAT (ICON CROSS)
     // ===============================
-    public function quickAdd($id)
+    public function quickAdd(Request $request, $id)
     {
-        $jumlahPesan = 1;
+        // Baca quantity dari request, default 1
+        $jumlahPesan = max(1, (int) $request->input('quantity', 1));
 
         $barang = barang::findOrFail($id);
 
@@ -27,31 +28,29 @@ class pesanancontroller extends Controller
         $pesanan = pesanan::firstOrCreate(
             ['user_id' => Auth::id(), 'status' => 0],
             [
-                'tanggal' => now(),
+                'tanggal'      => now(),
                 'jumlah_harga' => 0,
-                'kode' => 'ORD-' . time()
+                'kode'         => 'ORD-' . time()
             ]
         );
 
-        // cek detail
         $detail = detail_pesanan::where('pesanan_id', $pesanan->id)
             ->where('barang_id', $barang->id)
             ->first();
 
         if ($detail) {
-            $detail->jumlah += $jumlahPesan;
+            $detail->jumlah       += $jumlahPesan;
             $detail->jumlah_harga += $barang->harga * $jumlahPesan;
             $detail->save();
         } else {
             detail_pesanan::create([
-                'pesanan_id' => $pesanan->id,
-                'barang_id' => $barang->id,
-                'jumlah' => $jumlahPesan,
+                'pesanan_id'   => $pesanan->id,
+                'barang_id'    => $barang->id,
+                'jumlah'       => $jumlahPesan,
                 'jumlah_harga' => $barang->harga * $jumlahPesan
             ]);
         }
 
-        // hitung ulang total
         $pesanan->jumlah_harga = detail_pesanan::where('pesanan_id', $pesanan->id)
             ->sum('jumlah_harga');
         $pesanan->save();
@@ -59,7 +58,6 @@ class pesanancontroller extends Controller
         return redirect()->route('customer.checkout')
             ->with('success', 'Barang berhasil masuk keranjang');
     }
-
 
     public function pesan(Request $request, $id)
     {
