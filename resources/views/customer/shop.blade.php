@@ -30,7 +30,6 @@
 <div class="untree_co-section product-section before-footer-section">
     <div class="container">
         <div class="row g-4 justify-content-center">
-
             @php
             $categories = [
                 ['nama' => 'Meja',             'gambar' => 'template_customer/images/asset_cat/img_meja.jpg',    'slug' => 'meja'],
@@ -54,7 +53,6 @@
                 </a>
             </div>
             @endforeach
-
         </div>
     </div>
 </div>
@@ -105,20 +103,33 @@
             @forelse ($products as $item)
             <div class="col-6 col-md-4 col-lg" style="flex: 0 0 20%; max-width: 20%;">
                 <div class="product-card">
-                    <a href="{{ route('customer.shop', $item->id) }}">
-                        <div class="product-img-wrapper">
-                            <img src="{{ asset('storage/' . $item->gambar) }}"
-                                 class="product-img" alt="{{ $item->nama_barang }}">
-                        </div>
-                        <div class="product-info text-center mt-2">
-                            <h6 class="product-name">{{ strtoupper($item->nama_barang) }}</h6>
-                            <p class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</p>
-                        </div>
-                    </a>
+
+                    <div class="product-img-wrapper"
+                         style="cursor: pointer;"
+                         onclick="showProductModal(
+                             '{{ addslashes($item->nama_barang) }}',
+                             '{{ asset('storage/' . $item->gambar) }}',
+                             '{{ number_format($item->harga, 0, ',', '.') }}',
+                             '{{ addslashes($item->bahan) }}',
+                             '{{ addslashes($item->ukuran) }}',
+                             {{ $item->stok }},
+                             '{{ addslashes($item->deskripsi ?? '-') }}',
+                             {{ $item->id }}
+                         )">
+                        <img src="{{ asset('storage/' . $item->gambar) }}"
+                             class="product-img" alt="{{ $item->nama_barang }}">
+                    </div>
+
+                    <div class="product-info text-center mt-2">
+                        <h6 class="product-name">{{ strtoupper($item->nama_barang) }}</h6>
+                        <p class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</p>
+                    </div>
+
                     <form action="{{ route('quick.add', $item->id) }}" method="POST" class="text-center">
                         @csrf
                         <button type="submit" class="btn btn-add-cart w-100">ADD TO CART</button>
                     </form>
+
                 </div>
             </div>
             @empty
@@ -133,7 +144,100 @@
 
     </div>
 </div>
+
+{{-- ===== MODAL POPUP DETAIL BARANG ===== --}}
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: none;">
+
+            <div class="modal-header" style="background: #3b5d50; border: none;">
+                <h5 class="modal-title text-white fw-bold" id="productModalLabel">Detail Produk</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <div class="row g-0">
+
+                    <div class="col-md-5 d-flex align-items-center justify-content-center"
+                         style="background: #f8f3ef; padding: 24px;">
+                        <img id="modal-gambar" src="" alt="Gambar Produk"
+                             style="max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 10px;">
+                    </div>
+
+                    <div class="col-md-7 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <h4 id="modal-nama" class="fw-bold mb-1" style="color: #3b2a1a;"></h4>
+                            <p id="modal-harga" class="fw-bold fs-5 mb-3" style="color: #c0392b;"></p>
+                            <hr style="border-color: #e0d6cc;">
+                            <table class="table table-borderless mb-3" style="font-size: 0.93rem;">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-muted ps-0" style="width: 110px;">Bahan</td>
+                                        <td class="fw-semibold" id="modal-bahan"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted ps-0">Ukuran</td>
+                                        <td class="fw-semibold" id="modal-ukuran"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted ps-0">Stok</td>
+                                        <td id="modal-stok"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mb-3">
+                                <p class="text-muted mb-1" style="font-size: 0.88rem;">Deskripsi</p>
+                                <p id="modal-deskripsi" style="font-size: 0.93rem; color: #3b2a1a; line-height: 1.6;"></p>
+                            </div>
+                        </div>
+
+                        {{-- ✅ Form cart sama persis seperti card, action pakai id 0 dulu --}}
+                        <form id="modal-cart-form" action="{{ route('quick.add', 0) }}" method="POST" class="text-center">
+                            @csrf
+                            <button type="submit" class="btn btn-add-cart w-100">ADD TO CART</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 @endsection
+
+{{-- ===== STYLES ===== --}}
+@push('styles')
+<style>
+    .product-img-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+    .product-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(92, 61, 46, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        border-radius: 8px;
+    }
+    .product-overlay span {
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+    .product-img-wrapper:hover .product-overlay {
+        opacity: 1;
+    }
+    .badge-stok-ada   { background: #e6f4ea; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
+    .badge-stok-habis { background: #fdecea; color: #c62828; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
+</style>
+@endpush
 
 {{-- ===== SCRIPTS ===== --}}
 @push('scripts')
@@ -182,9 +286,7 @@
 
         autoPlay();
 
-        // ===== SCROLL TO #all-products SETELAH SEARCH / SORT =====
-
-        // Intercept search form submit
+        // ===== SCROLL TO #all-products =====
         const searchForm = document.getElementById('searchForm');
         if (searchForm) {
             searchForm.addEventListener('submit', function () {
@@ -192,7 +294,6 @@
             });
         }
 
-        // Intercept sort select change → set flag lalu submit form
         const sortSelect = document.getElementById('sortSelect');
         if (sortSelect) {
             sortSelect.addEventListener('change', function () {
@@ -201,7 +302,6 @@
             });
         }
 
-        // Saat halaman load → cek flag, scroll jika ada
         window.addEventListener('load', function () {
             if (sessionStorage.getItem('scrollToProducts') === '1') {
                 sessionStorage.removeItem('scrollToProducts');
@@ -215,5 +315,31 @@
         });
 
     })();
+
+    // ===== FUNGSI MODAL PRODUK =====
+    function showProductModal(nama, gambar, harga, bahan, ukuran, stok, deskripsi, id) {
+        document.getElementById('modal-nama').textContent      = nama.toUpperCase();
+        document.getElementById('modal-gambar').src           = gambar;
+        document.getElementById('modal-harga').textContent    = 'Rp ' + harga;
+        document.getElementById('modal-bahan').textContent    = bahan;
+        document.getElementById('modal-ukuran').textContent   = ukuran;
+        document.getElementById('modal-deskripsi').textContent = deskripsi;
+
+        // Badge stok
+        const stokEl = document.getElementById('modal-stok');
+        if (stok > 0) {
+            stokEl.innerHTML = `<span class="badge-stok-ada">✔ Tersedia (${stok})</span>`;
+        } else {
+            stokEl.innerHTML = `<span class="badge-stok-habis">✘ Habis</span>`;
+        }
+
+        // ✅ Ganti /0 dengan id barang yang dipilih, sama seperti route('quick.add', $item->id)
+        const form = document.getElementById('modal-cart-form');
+        form.action = form.action.replace('/0', '/' + id);
+
+        // Tampilkan modal
+        const modal = new bootstrap.Modal(document.getElementById('productModal'));
+        modal.show();
+    }
 </script>
 @endpush
