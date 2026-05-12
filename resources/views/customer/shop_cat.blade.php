@@ -56,7 +56,36 @@
 
                 {{-- Pagination --}}
                 <div class="d-flex justify-content-center mt-5">
-                    {{ $products->appends(request()->query())->links() }}
+                    @if ($products->hasPages())
+                    <ul class="pagination">
+
+                        {{-- Prev --}}
+                        @if ($products->onFirstPage())
+                            <li class="page-item disabled"><span class="page-link">←</span></li>
+                        @else
+                            <li class="page-item"><a class="page-link" href="{{ $products->previousPageUrl() }}&{{ http_build_query(request()->except('page')) }}">←</a></li>
+                        @endif
+
+                        {{-- Angka --}}
+                        @foreach ($products->appends(request()->query())->getUrlRange(1, $products->lastPage()) as $page => $url)
+                            @if ($page == $products->currentPage())
+                                <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                            @elseif ($page == 1 || $page == $products->lastPage() || abs($page - $products->currentPage()) <= 2)
+                                <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                            @elseif (abs($page - $products->currentPage()) == 3)
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            @endif
+                        @endforeach
+
+                        {{-- Next --}}
+                        @if ($products->hasMorePages())
+                            <li class="page-item"><a class="page-link" href="{{ $products->nextPageUrl() }}&{{ http_build_query(request()->except('page')) }}">→</a></li>
+                        @else
+                            <li class="page-item disabled"><span class="page-link">→</span></li>
+                        @endif
+
+                    </ul>
+                    @endif
                 </div>
 
             </div>

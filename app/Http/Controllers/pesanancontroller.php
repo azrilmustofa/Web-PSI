@@ -149,12 +149,15 @@ class pesanancontroller extends Controller
    
     public function checkout()
     {
-        $data = pesanan::with('detail.barang')
-            ->where('user_id', Auth::id())
+        $pesanan = pesanan::where('user_id', Auth::id())
             ->where('status', 0)
             ->first();
 
-        return view('customer.chart', compact('data'));
+        $pesanan_details = $pesanan
+            ? $pesanan->detail()->with('barang')->get()
+            : collect();
+
+        return view('customer.chart', compact('pesanan', 'pesanan_details'));
     }
 
     // ===============================
@@ -182,8 +185,18 @@ class pesanancontroller extends Controller
     }
 
 
-    public function bayar()
+    // Ganti method bayar() di pesanancontroller.php
+    public function bayar(Request $request)
     {
+        $request->validate([
+            'nama_penerima'     => 'required|string',
+            'no_telepon'        => 'required|string',
+            'alamat'            => 'required|string',
+            'kota'              => 'required|string',
+            'kode_pos'          => 'required|string',
+            'metode_pembayaran' => 'required|string',
+        ]);
+
         $pesanan = pesanan::with('detail.barang')
             ->where('user_id', Auth::id())
             ->where('status', 0)
@@ -194,22 +207,26 @@ class pesanancontroller extends Controller
                 ->with('error', 'Tidak ada pesanan untuk dibayar');
         }
 
-        // 🔽 Kurangi stok barang
         foreach ($pesanan->detail as $item) {
-            $barang = $item->barang;
-
-            if ($barang->stok < $item->jumlah) {
+            if ($item->barang->stok < $item->jumlah) {
                 return redirect()->route('customer.checkout')
-                    ->with('error', 'Stok barang tidak mencukupi');
+                    ->with('error', 'Stok ' . $item->barang->nama_barang . ' tidak mencukupi');
             }
-
-            $barang->stok -= $item->jumlah;
-            $barang->save();
+            $item->barang->stok -= $item->jumlah;
+            $item->barang->save();
         }
 
-        // 🔽 Update status pesanan → BERHASIL
-        $pesanan->status = 1;
-        $pesanan->save();
+        // Simpan data pengiriman & pembayaran ke pesanan
+        $pesanan->update([
+            'status'            => 1,
+            'nama_penerima'     => $request->nama_penerima,
+            'no_telepon'        => $request->no_telepon,
+            'alamat'            => $request->alamat,
+            'kota'              => $request->kota,
+            'kode_pos'          => $request->kode_pos,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'catatan'           => $request->catatan,
+        ]);
 
         return redirect()->route('customer.checkout')
             ->with('success', 'Pembayaran berhasil! Pesanan sedang diproses.');
