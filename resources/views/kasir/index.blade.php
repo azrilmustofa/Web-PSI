@@ -19,9 +19,6 @@
             </p>
         </div>
 
-        <div class="bg-dark text-white px-4 py-2 rounded-pill">
-            {{ auth()->user()->name }}
-        </div>
 
     </div>
 

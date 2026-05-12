@@ -5,7 +5,7 @@
 @section('slider')
 <div class="slider-wrapper">
     <div class="slider-container" id="sliderContainer">
-        <div class="slide active" style="background-image: url('{{ asset('template_customer/images/slide1.jpg') }}')"></div>
+        <div class="slide active" style="background-image: url('{{ asset('template_customer/images/slide1.png') }}')"></div>
         <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide2.jpg') }}')"></div>
         <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide3.jpg') }}')"></div>
     </div>

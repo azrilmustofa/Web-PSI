@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admincontroller;
+use App\Http\Controllers\laporan;
 use App\Http\Controllers\customercontroller;
 use App\Http\Controllers\barangcontroller;
 use App\Http\Controllers\pesanancontroller;
@@ -63,6 +64,7 @@ Route::middleware(['auth','customer'])->group(function () {
     ->name('checkout.hapus');
     Route::post('/checkout/tambah/{id}', [pesananController::class, 'tambah'])->name('checkout.tambah');
     Route::post('/checkout/kurang/{id}', [pesananController::class, 'kurang'])->name('checkout.kurang');
+    
 
 
 
@@ -78,16 +80,32 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/simpan-barang', [barangcontroller::class, 'store'])->name('barang.store');
     Route::post('/update-barang/{id}', [barangcontroller::class, 'update'])->name('barang.update');
     Route::delete('/hapus-barang/{id}', [barangcontroller::class, 'destroy'])->name('barang.destroy');
-    Route::get('/laporan', [admincontroller::class, 'index'])->name('laporan.index');
+    Route::get('/laporan', [laporan::class, 'index'])->name('laporan.index');
+    Route::get('/data-pengguna', [admincontroller::class, 'index'])->name('datpen.index');
+    Route::post('/data-pengguna/store', [admincontroller::class, 'store'])
+        ->name('datpen.store');
+    
 });
-Route::get('/profile', function () {
-    return view('profile');
-})->name('profile')->middleware('auth');
-// Contoh jika menggunakan closure langsung di web.php
-Route::get('/profile', function () {
-    return view('profile_c'); // Sesuaikan folder tempat kamu menyimpan filenya
-})->name('profile')->middleware('auth');
 
+Route::get('/profile', function () {
+
+    if(auth()->user()->role == 'admin'){
+
+        return view('profile');
+
+    } elseif(auth()->user()->role == 'customer'){
+
+        return view('profile_c');
+
+    } elseif(auth()->user()->role == 'kasir'){
+
+        return view('profile_k');
+
+    }
+
+    return redirect('/');
+
+})->middleware('auth')->name('profile');
 // ATAU jika menggunakan Controller (Disarankan)
 // Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 

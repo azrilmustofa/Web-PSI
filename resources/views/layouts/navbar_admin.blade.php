@@ -22,6 +22,11 @@
                         Laporan
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3 {{ Request::is('datpen*') ? 'active fw-bold' : '' }}" href="{{ route('datpen.index') }}">
+                        Data Pengguna
+                    </a>
+                </li>
 
                 @auth
                 <li class="nav-item dropdown ms-md-3">
