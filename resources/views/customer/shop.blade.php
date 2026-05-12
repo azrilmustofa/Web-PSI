@@ -110,6 +110,7 @@
                              '{{ addslashes($item->nama_barang) }}',
                              '{{ asset('storage/' . $item->gambar) }}',
                              '{{ number_format($item->harga, 0, ',', '.') }}',
+                             {{ $item->harga }},
                              '{{ addslashes($item->bahan) }}',
                              '{{ addslashes($item->ukuran) }}',
                              {{ $item->stok }},
@@ -125,10 +126,20 @@
                         <p class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</p>
                     </div>
 
-                    <form action="{{ route('quick.add', $item->id) }}" method="POST" class="text-center">
-                        @csrf
-                        <button type="submit" class="btn btn-add-cart w-100">ADD TO CART</button>
-                    </form>
+                    <button type="button" class="btn btn-add-cart w-100"
+                            onclick="showProductModal(
+                                '{{ addslashes($item->nama_barang) }}',
+                                '{{ asset('storage/' . $item->gambar) }}',
+                                '{{ number_format($item->harga, 0, ',', '.') }}',
+                                {{ $item->harga }},
+                                '{{ addslashes($item->bahan) }}',
+                                '{{ addslashes($item->ukuran) }}',
+                                {{ $item->stok }},
+                                '{{ addslashes($item->deskripsi ?? '-') }}',
+                                {{ $item->id }}
+                            )">
+                        ADD TO CART
+                    </button>
 
                 </div>
             </div>
@@ -191,11 +202,28 @@
                             </div>
                         </div>
 
-                        {{-- ✅ Form cart sama persis seperti card, action pakai id 0 dulu --}}
-                        <form id="modal-cart-form" action="{{ route('quick.add', 0) }}" method="POST" class="text-center">
-                            @csrf
-                            <button type="submit" class="btn btn-add-cart w-100">ADD TO CART</button>
-                        </form>
+                        <div>
+                            {{-- Input Quantity --}}
+                            <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+                                <button type="button" class="btn-qty" onclick="changeQty(-1)">&#8722;</button>
+                                <input type="number" id="modal-qty" value="1" min="1"
+                                       class="form-control text-center fw-bold qty-input"
+                                       oninput="updateTotal()">
+                                <button type="button" class="btn-qty" onclick="changeQty(1)">&#43;</button>
+                            </div>
+
+                            {{-- Total Harga --}}
+                            <p class="text-center mb-3" style="font-size: 0.88rem; color: #666;">
+                                Total: <strong id="modal-total" style="color: #c0392b;"></strong>
+                            </p>
+
+                            {{-- Form Cart --}}
+                            <form id="modal-cart-form" action="{{ route('quick.add', 0) }}" method="POST" class="text-center">
+                                @csrf
+                                <input type="hidden" name="quantity" id="modal-qty-input" value="1">
+                                <button type="submit" class="btn btn-add-cart w-100">ADD TO CART</button>
+                            </form>
+                        </div>
 
                     </div>
                 </div>
@@ -210,30 +238,44 @@
 {{-- ===== STYLES ===== --}}
 @push('styles')
 <style>
-    .product-img-wrapper {
-        position: relative;
-        overflow: hidden;
+    /* Hilangkan arrow input number */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
     }
-    .product-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(92, 61, 46, 0.55);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.25s ease;
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* Input qty */
+    .qty-input {
+        width: 70px;
+        font-size: 1rem;
         border-radius: 8px;
+        text-align: center;
     }
-    .product-overlay span {
+
+    /* Tombol qty +/- */
+    .btn-qty {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid #3b5d50;
+        background: #fff;
+        color: #3b5d50;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        line-height: 1;
+        transition: all 0.2s;
+    }
+    .btn-qty:hover {
+        background: #3b5d50;
         color: #fff;
-        font-weight: 600;
-        font-size: 0.9rem;
-        letter-spacing: 0.5px;
     }
-    .product-img-wrapper:hover .product-overlay {
-        opacity: 1;
-    }
+
+    /* Badge stok */
     .badge-stok-ada   { background: #e6f4ea; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
     .badge-stok-habis { background: #fdecea; color: #c62828; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
 </style>
@@ -257,43 +299,21 @@
             slides[current].classList.add('active');
             dots[current].classList.add('active');
         }
+        function autoPlay() { timer = setInterval(() => goTo(current + 1), 4000); }
+        function resetTimer() { clearInterval(timer); autoPlay(); }
 
-        function autoPlay() {
-            timer = setInterval(() => goTo(current + 1), 4000);
-        }
-
-        function resetTimer() {
-            clearInterval(timer);
-            autoPlay();
-        }
-
-        document.getElementById('prevBtn').addEventListener('click', function () {
-            goTo(current - 1);
-            resetTimer();
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', function () {
-            goTo(current + 1);
-            resetTimer();
-        });
-
+        document.getElementById('prevBtn').addEventListener('click', function () { goTo(current - 1); resetTimer(); });
+        document.getElementById('nextBtn').addEventListener('click', function () { goTo(current + 1); resetTimer(); });
         dots.forEach(function (dot) {
-            dot.addEventListener('click', function () {
-                goTo(parseInt(this.dataset.index));
-                resetTimer();
-            });
+            dot.addEventListener('click', function () { goTo(parseInt(this.dataset.index)); resetTimer(); });
         });
-
         autoPlay();
 
         // ===== SCROLL TO #all-products =====
         const searchForm = document.getElementById('searchForm');
         if (searchForm) {
-            searchForm.addEventListener('submit', function () {
-                sessionStorage.setItem('scrollToProducts', '1');
-            });
+            searchForm.addEventListener('submit', function () { sessionStorage.setItem('scrollToProducts', '1'); });
         }
-
         const sortSelect = document.getElementById('sortSelect');
         if (sortSelect) {
             sortSelect.addEventListener('change', function () {
@@ -301,28 +321,34 @@
                 document.getElementById('sortForm').submit();
             });
         }
-
         window.addEventListener('load', function () {
             if (sessionStorage.getItem('scrollToProducts') === '1') {
                 sessionStorage.removeItem('scrollToProducts');
                 const el = document.getElementById('all-products');
-                if (el) {
-                    setTimeout(function () {
-                        el.scrollIntoView({ behavior: 'smooth' });
-                    }, 300);
-                }
+                if (el) { setTimeout(function () { el.scrollIntoView({ behavior: 'smooth' }); }, 300); }
             }
         });
 
     })();
 
+    // ===== VARIABEL GLOBAL =====
+    let modalHargaSatuan = 0;
+    let modalMaxStok     = 1;
+
     // ===== FUNGSI MODAL PRODUK =====
-    function showProductModal(nama, gambar, harga, bahan, ukuran, stok, deskripsi, id) {
+    function showProductModal(nama, gambar, hargaFormatted, hargaAngka, bahan, ukuran, stok, deskripsi, id) {
+        // Reset qty
+        document.getElementById('modal-qty').value       = 1;
+        document.getElementById('modal-qty-input').value = 1;
+
+        modalHargaSatuan = hargaAngka;
+        modalMaxStok     = stok;
+
         document.getElementById('modal-nama').textContent      = nama.toUpperCase();
-        document.getElementById('modal-gambar').src           = gambar;
-        document.getElementById('modal-harga').textContent    = 'Rp ' + harga;
-        document.getElementById('modal-bahan').textContent    = bahan;
-        document.getElementById('modal-ukuran').textContent   = ukuran;
+        document.getElementById('modal-gambar').src            = gambar;
+        document.getElementById('modal-harga').textContent     = 'Rp ' + hargaFormatted;
+        document.getElementById('modal-bahan').textContent     = bahan;
+        document.getElementById('modal-ukuran').textContent    = ukuran;
         document.getElementById('modal-deskripsi').textContent = deskripsi;
 
         // Badge stok
@@ -333,13 +359,33 @@
             stokEl.innerHTML = `<span class="badge-stok-habis">✘ Habis</span>`;
         }
 
-        // ✅ Ganti /0 dengan id barang yang dipilih, sama seperti route('quick.add', $item->id)
-        const form = document.getElementById('modal-cart-form');
-        form.action = form.action.replace('/0', '/' + id);
+        updateTotal();
 
-        // Tampilkan modal
+        // Update action form
+        const form = document.getElementById('modal-cart-form');
+        form.action = form.action.replace(/\/\d+$/, '/' + id);
+
         const modal = new bootstrap.Modal(document.getElementById('productModal'));
         modal.show();
+    }
+
+    // ===== FUNGSI QTY +/- =====
+    function changeQty(delta) {
+        const input = document.getElementById('modal-qty');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        if (val > modalMaxStok) val = modalMaxStok;
+        input.value = val;
+        document.getElementById('modal-qty-input').value = val;
+        updateTotal();
+    }
+
+    // ===== FUNGSI UPDATE TOTAL =====
+    function updateTotal() {
+        const qty   = parseInt(document.getElementById('modal-qty').value) || 1;
+        const total = modalHargaSatuan * qty;
+        document.getElementById('modal-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+        document.getElementById('modal-qty-input').value   = qty;
     }
 </script>
 @endpush
