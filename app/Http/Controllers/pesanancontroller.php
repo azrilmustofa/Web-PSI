@@ -24,7 +24,6 @@ class pesanancontroller extends Controller
             return back()->with('error', 'Stok tidak mencukupi');
         }
 
-        // ambil / buat pesanan aktif
         $pesanan = pesanan::firstOrCreate(
             ['user_id' => Auth::id(), 'status' => 0],
             [
@@ -61,9 +60,7 @@ class pesanancontroller extends Controller
             ->with('success', 'Barang berhasil masuk keranjang');
     }
 
-    // ===============================
-    // TAMBAH DARI HALAMAN DETAIL
-    // ===============================
+
     public function pesan(Request $request, $id)
     {
         $request->validate([
@@ -149,9 +146,7 @@ class pesanancontroller extends Controller
 
 
 
-    // ===============================
-    // HALAMAN KERANJANG
-    // ===============================
+   
     public function checkout()
     {
         $data = pesanan::with('detail.barang')
