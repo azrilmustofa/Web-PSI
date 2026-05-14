@@ -24,32 +24,34 @@
 
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-lg-5 align-items-center">
                 @auth
-                    <li class="nav-item dropdown">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle d-flex align-items-center gap-2" 
-                                    type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" 
-                                    style="border-radius: 30px; padding: 5px 15px; background-color: #f9bf29; border: none;">
-                                
-                                <div class="d-flex justify-content-center align-items-center shadow-sm" 
-                                     style="width: 25px; height: 25px; background-color: #d4a017; border-radius: 50%; font-size: 12px; color: white; font-weight: bold;">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                </div>
-                                
-                                <span style="color: #2f2f2f; font-weight: 600;">{{ Auth::user()->name }}</span>
-                            </button>
-                            
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownMenuButton" style="border-radius: 10px;">
-                                <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">Logout</button>
-                                    </form>
-                                </li>
-                            </ul>
+                    <li class="nav-item dropdown ms-md-3">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center bg-white bg-opacity-10 rounded-pill ps-2 pe-3 py-1" 
+                       href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <span class="text-dark fw-bold" style="font-size: 0.8rem;">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </span>
                         </div>
-                    </li>
+                        <span class="text-white small fw-medium">{{ Auth::user()->name }}</span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="profileDropdown">
+                        <li>
+                            <a class="dropdown-item py-2" href="{{ route('profile') }}">
+                                <i class="bi bi-person me-2"></i> Profile
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="dropdown-item py-2 text-danger" type="submit">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
                 @else 
                     <li class="nav-item">
                         <a class="nav-link btn btn-white-outline py-1 px-3 me-2" href="{{ route('login') }}" style="border-radius: 20px;">Login</a>

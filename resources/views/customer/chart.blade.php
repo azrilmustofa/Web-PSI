@@ -11,60 +11,89 @@
 @endif
 
 @if ($pesanan && $pesanan->detail && $pesanan->detail->count() > 0)
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nama Barang</th>
-                <th>Harga</th>
-                <th>Jumlah</th>
-                <th>Subtotal</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($pesanan->detail as $item)
-            <tr>
-                <td>{{ $item->barang->nama_barang }}</td>
-                <td>Rp {{ number_format($item->barang->harga, 0, ',', '.') }}</td>
-                <td>
-                    <div class="d-flex align-items-center gap-2">
-                        <form action="{{ route('checkout.kurang', $item->id) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-warning btn-sm">-</button>
-                        </form>
-                        <span>{{ $item->jumlah }}</span>
-                        <form action="{{ route('checkout.tambah', $item->id) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-primary btn-sm">+</button>
-                        </form>
-                    </div>
-                </td>
-                <td>Rp {{ number_format($item->jumlah_harga, 0, ',', '.') }}</td>
-                <td>
-                    <form action="{{ route('checkout.hapus', $item->id) }}" method="POST"
-                          onsubmit="return confirm('Hapus barang dari keranjang?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger btn-sm">Hapus</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <h5 class="text-end">
-        Total: <strong>Rp {{ number_format($pesanan->jumlah_harga, 0, ',', '.') }}</strong>
-    </h5>
-
-    {{-- GANTI: dari form submit → buka modal --}}
-    <div class="text-end mt-3">
-        <button type="button" class="btn btn-success"
-                data-bs-toggle="modal" data-bs-target="#checkoutModal">
-            Bayar Sekarang
-        </button>
+    {{-- AREA TABEL - FIX TEKS KEPENYET --}}
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; overflow: hidden;">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem; line-height: 1.6;">
+                    <thead class="bg-light">
+                        <tr style="border-bottom: 2px solid #eee;">
+                            <th class="ps-4 py-3 text-uppercase fw-bold text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">Produk</th>
+                            <th class="py-3 text-uppercase fw-bold text-muted text-center" style="font-size: 0.75rem;">Harga</th>
+                            <th class="py-3 text-uppercase fw-bold text-muted text-center" style="font-size: 0.75rem; width: 120px;">Jumlah</th>
+                            <th class="py-3 text-uppercase fw-bold text-muted text-center" style="font-size: 0.75rem;">Subtotal</th>
+                            <th class="pe-4 py-3 text-uppercase fw-bold text-muted text-end" style="font-size: 0.75rem;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($pesanan->detail as $item)
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ asset('storage/barang/'.$item->barang->gambar) }}" 
+                                         width="60" height="60" class="rounded shadow-sm" 
+                                         style="object-fit: cover;">
+                                    <div style="line-height: 1.4;">
+                                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">{{ $item->barang->nama_barang }}</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Dwijaya Mebel Original</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center text-secondary fw-medium">
+                                Rp {{ number_format($item->barang->harga, 0, ',', '.') }}
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <form action="{{ route('checkout.kurang', $item->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn-qty-mini">-</button>
+                                    </form>
+                                    <span class="fw-bold" style="min-width: 20px;">{{ $item->jumlah }}</span>
+                                    <form action="{{ route('checkout.tambah', $item->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn-qty-mini">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="text-center fw-bold" style="color: #c0392b; font-size: 0.95rem;">
+                                Rp {{ number_format($item->jumlah_harga, 0, ',', '.') }}
+                            </td>
+                            <td class="pe-4 text-end">
+                                <form action="{{ route('checkout.hapus', $item->id) }}" method="POST"
+                                      onsubmit="return confirm('Hapus barang?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-dark btn-sm px-3 py-1" style="border-radius: 20px; font-size: 0.75rem; font-weight: 500;">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    {{-- FOOTER - FIX TOMBOL KOTAK --}}
+    <div class="row align-items-center mb-5 px-2">
+        <div class="col-md-6">
+             <a href="{{ url('/shop') }}" class="btn btn-dark px-4 py-2" style="border-radius: 30px; font-size: 0.85rem; font-weight: 500;">
+                &larr; Kembali Belanja
+            </a>
+        </div>
+        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+            <div class="d-inline-block text-end me-4 align-middle" style="line-height: 1.2;">
+                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Total Pembayaran:</small>
+                <strong class="h4 fw-bold mb-0" style="color: #c0392b;">Rp {{ number_format($pesanan->jumlah_harga, 0, ',', '.') }}</strong>
+            </div>
+            <button type="button" class="btn btn-success px-4 py-2 fw-bold shadow-sm"
+                    style="border-radius: 30px; background-color: #3b5d50; border: none; font-size: 0.9rem; letter-spacing: 0.5px;"
+                    data-bs-toggle="modal" data-bs-target="#checkoutModal">
+                BAYAR SEKARANG
+            </button>
+        </div>
+    </div>
 @else
     <p class="text-center">Keranjang masih kosong.</p>
 @endif
@@ -249,6 +278,37 @@
     border-color: #3b5d50;
     color: #3b5d50;
 }
+    /* Spasi teks supaya tidak kepenyet */
+    .table td, .table th {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .btn-qty-mini {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-qty-mini:hover {
+        background: #3b5d50;
+        color: white;
+        border-color: #3b5d50;
+    }
+    
+    /* Efek hover tombol utama */
+    .btn-success:hover {
+        background-color: #2e493f !important;
+        transform: translateY(-1px);
+    }
 </style>
 @endpush
 

@@ -1,9 +1,9 @@
 <!-- Modal Tambah Barang -->
 <div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-labelledby="modalTambahBarangLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg"> <!-- modal-lg supaya lebih lega -->
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
             
-            <!-- Header dengan warna Hijau Dwijaya Mebel -->
+            <!-- Header -->
             <div class="modal-header" style="background-color: #3d5a4a; color: white;">
                 <h5 class="modal-title" id="modalTambahBarangLabel">
                     <i class="fas fa-plus-circle me-2"></i> Tambah Produk Baru
@@ -20,10 +20,10 @@
                             <label class="form-label fw-bold">Nama Barang <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="nama_barang" placeholder="Contoh: Kursi Jati Minimalis" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="kategori_id" class="form-label fw-bold">Kategori Produk <span class="text-danger">*</span></label>
                             <select name="kategori_id" id="kategori_id" class="form-select" required>
-                                <option value="" selected disabled>-- Pilih Kategori (Kursi, Meja, Lemari) --</option>
+                                <option value="" selected disabled>-- Pilih Kategori --</option>
                                 @foreach($kategori as $k)
                                     <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
                                 @endforeach
@@ -43,20 +43,25 @@
                             <input type="number" class="form-control" name="stok" placeholder="0" required>
                         </div>
 
-                        <!-- Baris 3: Bahan & Ukuran -->
+                        <!-- Baris 3: Bahan (Dropdown) & Ukuran -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Bahan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="bahan" placeholder="Contoh: Kayu Jati" required>
+                            <label for="bahan_id" class="form-label fw-bold">Bahan <span class="text-danger">*</span></label>
+                            <select name="bahan_id" id="bahan_id" class="form-select" required>
+                                <option value="" selected disabled>-- Pilih Bahan (Jati, Mahoni, dll) --</option>
+                                @foreach($bahan as $b)
+                                    <option value="{{ $b->id }}">{{ $b->nama_bahan }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Ukuran <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="ukuran" placeholder="Contoh: 120x60x75 cm" required>
                         </div>
 
-                        <!-- Baris 4: Upload Deskripsi -->
-                        <div class="col-12 mb-2">
-                            <label class="form-label fw-bold">Deskripsi Produk<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="deskripsi" placeholder="Masukkan Deskripsi Produk" required>
+                        <!-- Baris 4: Deskripsi -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Deskripsi Produk <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="deskripsi" rows="3" placeholder="Masukkan Deskripsi Produk" required></textarea>
                         </div>
 
                         <!-- Baris 5: Upload Gambar -->
@@ -70,7 +75,6 @@
 
                 <div class="modal-footer" style="background-color: #f8f9fa;">
                     <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Batal</button>
-                    <!-- Tombol Simpan dengan warna Hijau yang sama -->
                     <button type="submit" class="btn btn-primary px-4" style="background-color: #3d5a4a; border: none;">
                         <i class="fas fa-save me-1"></i> Simpan Data
                     </button>

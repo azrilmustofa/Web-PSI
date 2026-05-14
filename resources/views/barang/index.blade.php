@@ -14,14 +14,13 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle" id="tabel-barang">
-                    <!-- Header Tabel dengan Hijau Dwijaya Mebel -->
                     <thead style="background-color: #1c1b1b; color: white;">
                         <tr>
                             <th class="text-center" style="width:5%">No.</th>
                             <th>Nama Barang</th>
-                            <th>Kategori</th> <!-- Tambahan Kolom Kategori -->
+                            <th>Kategori</th>
                             <th>Harga</th>
-                            <th>Bahan</th>
+                            <th>Bahan</th> <!-- Sekarang mengambil dari relasi -->
                             <th class="text-center">Stok</th>
                             <th class="text-center">Gambar</th>
                             <th class="text-center" style="width:15%">Aksi</th>
@@ -33,13 +32,19 @@
                             <td class="text-center">{{ $loop->iteration }}</td>
                             <td class="fw-semibold">{{ $data->nama_barang }}</td>
                             <td>
-                                <!-- Menampilkan Nama Kategori -->
                                 <span class="badge bg-light text-dark border">
                                     {{ $data->kategori->nama_kategori ?? 'Tanpa Kategori' }}
                                 </span>
                             </td>
                             <td class="fw-bold text-success">Rp {{ number_format($data->harga, 0, ',', '.') }}</td>
-                            <td>{{ $data->bahan }}</td>
+                            
+                            <!-- PERBAIKAN: Menampilkan Nama Bahan dari Relasi -->
+                            <td>
+                                <span class="text-muted">
+                                    {{ $data->bahan->nama_bahan ?? 'Tanpa Bahan' }}
+                                </span>
+                            </td>
+
                             <td class="text-center">
                                 @if($data->stok <= 5)
                                     <span class="text-danger fw-bold">{{ $data->stok }} (Hampir Habis)</span>
@@ -58,13 +63,11 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <!-- Tombol Ubah Kuning/Emas -->
                                     <button class="btn btn-warning btn-sm fw-bold text-white shadow-sm" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#modalEditBarang{{ $data->id }}">
                                         Ubah
                                     </button>
-                                    <!-- Tombol Hapus Merah -->
                                     <button class="btn btn-danger btn-sm fw-bold shadow-sm" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#modalHapusBarang{{ $data->id }}">
@@ -74,7 +77,8 @@
                             </td>
                         </tr>
 
-                        @include('barang.update', ['data' => $data, 'kategori' => $kategori])
+                        <!-- Kirim data bahan juga ke modal update -->
+                        @include('barang.update', ['data' => $data, 'kategori' => $kategori, 'bahan' => $bahan])
                         @include('barang.delete', ['data' => $data])
                         @endforeach
                     </tbody>
@@ -84,7 +88,8 @@
     </div>
 </div>
 
-@include('barang.create')
+<!-- Kirim data bahan ke modal create -->
+@include('barang.create', ['kategori' => $kategori, 'bahan' => $bahan])
 
 @stop
 

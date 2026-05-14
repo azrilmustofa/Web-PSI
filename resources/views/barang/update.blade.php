@@ -12,7 +12,9 @@
 
             <form action="{{ route('barang.update', $data->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                {{-- Gunakan POST karena di controller kamu menangani update dengan method POST --}}
+                {{-- Gunakan method PUT/PATCH jika route kamu menggunakan Route::put atau Route::patch --}}
+                {{-- @method('PUT') --}}
+                
                 <div class="modal-body p-4">
                     <div class="row">
                         <!-- Baris 1: Nama & Kategori -->
@@ -45,20 +47,27 @@
                             <input type="number" class="form-control" name="stok" value="{{ $data->stok }}" required>
                         </div>
 
-                        <!-- Baris 3: Bahan & Ukuran -->
+                        <!-- Baris 3: Bahan (Dropdown) & Ukuran -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Bahan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="bahan" value="{{ $data->bahan }}" required>
+                            <select name="bahan_id" class="form-select" required>
+                                <option value="" disabled>-- Pilih Bahan --</option>
+                                @foreach($bahan as $b)
+                                    <option value="{{ $b->id }}" {{ $data->bahan_id == $b->id ? 'selected' : '' }}>
+                                        {{ $b->nama_bahan }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Ukuran <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="ukuran" value="{{ $data->ukuran }}" required>
                         </div>
 
-                        <!-- baris 4 -->
+                        <!-- baris 4: Deskripsi -->
                         <div class="col-12 mb-3">
                             <label class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="deskripsi" value="{{ $data->deskripsi }}" required>
+                            <textarea class="form-control" name="deskripsi" rows="3" required>{{ $data->deskripsi }}</textarea>
                         </div>
 
                         <!-- Baris 5: Update Gambar -->
@@ -67,7 +76,8 @@
                             <div class="d-flex align-items-start gap-3">
                                 @if($data->gambar)
                                     <div class="text-center">
-                                        <img src="{{ asset('storage/'.$data->gambar) }}" class="rounded border mb-1" width="80" height="80" style="object-fit: cover;">
+                                        {{-- Perbaikan path storage agar gambar muncul --}}
+                                        <img src="{{ asset('storage/barang/'.$data->gambar) }}" class="rounded border mb-1" width="80" height="80" style="object-fit: cover;">
                                         <div class="small text-muted">Foto Lama</div>
                                     </div>
                                 @endif

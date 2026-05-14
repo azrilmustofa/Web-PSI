@@ -1,28 +1,28 @@
 @extends('layouts.master')
-
 @section('content')
+
 <div class="container py-5">
     <div class="row">
         {{-- Sidebar Profil --}}
         <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+            <div class="card card-profile shadow-sm border-0">
                 <div class="card-body text-center p-4">
                     <div class="d-inline-flex justify-content-center align-items-center mb-3 shadow-sm" 
-                         style="width: 80px; height: 80px; background-color: #f9bf29; border-radius: 50%; color: white; font-size: 32px; font-weight: bold;">
+                         style="width: 85px; height: 85px; background-color: var(--secondary-color); border-radius: 50%; color: white; font-size: 34px; font-weight: bold; border: 4px solid #fff;">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                    <h5 class="fw-bold mb-0">{{ Auth::user()->name }}</h5>
-                    <p class="text-muted small">{{ Auth::user()->email }}</p>
+                    <h5 class="fw-bold mb-1">{{ Auth::user()->name }}</h5>
+                    <p class="text-muted small mb-4">{{ Auth::user()->email }}</p>
                     
-                    <div class="nav flex-column nav-pills mt-4" id="v-pills-tab" role="tablist">
-                        <button class="nav-link active mb-2 py-3 text-start px-4" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" style="border-radius: 10px;">
-                            <i class="bi bi-person me-2"></i> Profil Saya
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                        <button class="nav-link active mb-2 py-3 text-start px-4" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab">
+                            <i class="bi bi-person-circle me-3"></i>Profil Saya
                         </button>
-                        <button class="nav-link mb-2 py-3 text-start px-4" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" style="border-radius: 10px;">
-                            <i class="bi bi-bag-check me-2"></i> Riwayat Pembelian
+                        <button class="nav-link mb-2 py-3 text-start px-4" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab">
+                            <i class="bi bi-clock-history me-3"></i>Riwayat Pesanan
                         </button>
-                        <button class="nav-link mb-2 py-3 text-start px-4" id="pills-password-tab" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab" style="border-radius: 10px;">
-                            <i class="bi bi-shield-lock me-2"></i> Ganti Password
+                        <button class="nav-link mb-2 py-3 text-start px-4" id="pills-password-tab" data-bs-toggle="pill" data-bs-target="#pills-password" type="button" role="tab">
+                            <i class="bi bi-shield-lock me-3"></i>Keamanan Akun
                         </button>
                     </div>
                 </div>
@@ -31,96 +31,106 @@
 
         {{-- Konten Tab --}}
         <div class="col-lg-8">
-            <div class="tab-content card shadow-sm border-0 p-4" id="v-pills-tabContent" style="border-radius: 15px; min-height: 400px;">
+            <div class="tab-content card shadow-sm border-0 p-4" id="v-pills-tabContent" style="border-radius: 15px; min-height: 450px;">
                 
                 {{-- Alert Sukses --}}
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px;">
-                        <i class="bi bi-check-circle me-2"></i> {{ session('success') }}
+                    <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert" style="border-radius: 10px; background-color: #d1e7dd; color: #0f5132;">
+                        <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
                 {{-- Tab Profil --}}
                 <div class="tab-pane fade show active" id="pills-profile" role="tabpanel">
-                    <h4 class="fw-bold mb-4">Informasi Profil</h4>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Nama Lengkap</label>
-                        <input type="text" class="form-control custom-input" value="{{ Auth::user()->name }}" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Alamat Email</label>
-                        <input type="email" class="form-control custom-input" value="{{ Auth::user()->email }}" readonly>
+                    <h4 class="fw-bold mb-1 text-dark">Detail Akun</h4>
+                    <p class="text-muted small mb-4">Kelola informasi data diri Anda.</p>
+                    <hr class="mb-4 opacity-50">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Nama Lengkap</label>
+                            <input type="text" class="form-control custom-input bg-light" value="{{ Auth::user()->name }}" readonly>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Alamat Email</label>
+                            <input type="email" class="form-control custom-input bg-light" value="{{ Auth::user()->email }}" readonly>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Tab Riwayat --}}
                 <div class="tab-pane fade" id="pills-history" role="tabpanel">
-                    <h4 class="fw-bold mb-4">Riwayat Pembelian</h4>
+                    <h4 class="fw-bold mb-1">Daftar Transaksi</h4>
+                    <p class="text-muted small mb-4">Riwayat pesanan yang pernah Anda lakukan.</p>
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
+                        <table class="table align-middle">
+                            <thead>
                                 <tr>
-                                    <th>ID Pesanan</th>
-                                    <th>Tanggal</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
+                                    <th class="border-0">No. Pesanan</th>
+                                    <th class="border-0">Tanggal</th>
+                                    <th class="border-0">Total Tagihan</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($riwayat_pesanan as $pesanan)
                                 <tr>
-                                    <td>#DWJ-001</td>
-                                    <td>25 Apr 2026</td>
-                                    <td class="fw-bold text-success">Rp 1.500.000</td>
-                                    <td><span class="badge bg-info text-dark">Dikirim</span></td>
-                                    <td><button class="btn btn-sm btn-outline-dark">Detail</button></td>
+                                    <td class="fw-bold text-dark">#DWJ-{{ $pesanan->id }}</td>
+                                    <td class="text-muted small">{{ \Carbon\Carbon::parse($pesanan->tanggal)->format('d M Y') }}</td>
+                                    <td class="fw-bold text-success">Rp {{ number_format($pesanan->jumlah_harga, 0, ',', '.') }}</td>
+                                    <td>
+                                        @if($pesanan->status == 1)
+                                            <span class="badge badge-status bg-warning text-dark">Pending</span>
+                                        @elseif($pesanan->status == 2)
+                                            <span class="badge badge-status bg-info text-white">Diproses</span>
+                                        @elseif($pesanan->status == 3)
+                                            <span class="badge badge-status bg-primary">Dikirim</span>
+                                        @elseif($pesanan->status == 4)
+                                            <span class="badge badge-status bg-success">Selesai</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-dark px-3 btn-detail" 
+                                                data-id="{{ $pesanan->id }}" style="border-radius: 8px;">
+                                            Lihat Detail
+                                        </button>
+                                    </td>
                                 </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" width="80" class="mb-3 opacity-50">
+                                        <p class="text-muted mb-0">Belum ada transaksi apapun.</p>
+                                    </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                {{-- Tab Password (FIXED) --}}
+                {{-- Tab Password --}}
                 <div class="tab-pane fade" id="pills-password" role="tabpanel">
-                    <h4 class="fw-bold mb-4">Ubah Keamanan Password</h4>
+                    <h4 class="fw-bold mb-1">Ganti Password</h4>
+                    <p class="text-muted small mb-4">Pastikan password baru Anda kuat dan sulit ditebak.</p>
                     <form action="{{ route('password.update') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        {{-- Password Saat Ini --}}
+                        @csrf @method('PUT')
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Password Saat Ini</label>
-                            <input type="password" name="current_password" 
-                                   class="form-control custom-input @error('current_password') is-invalid @enderror" 
-                                   placeholder="Masukkan password lama" required>
-                            @error('current_password')
-                                <div class="text-danger small mt-1 ms-2">{{ $message }}</div>
-                            @enderror
+                            <label class="form-label small fw-bold">Password Lama</label>
+                            <input type="password" name="current_password" class="form-control custom-input @error('current_password') is-invalid @enderror" placeholder="••••••••" required>
+                            @error('current_password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-
-                        {{-- Password Baru --}}
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Password Baru</label>
-                            <input type="password" name="new_password" 
-                                   class="form-control custom-input @error('new_password') is-invalid @enderror" 
-                                   placeholder="Minimal 8 karakter" required>
-                            @error('new_password')
-                                <div class="text-danger small mt-1 ms-2">{{ $message }}</div>
-                            @enderror
+                            <input type="password" name="new_password" class="form-control custom-input @error('new_password') is-invalid @enderror" placeholder="Minimal 8 karakter" required>
+                            @error('new_password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-
-                        {{-- Konfirmasi Password --}}
                         <div class="mb-4">
                             <label class="form-label small fw-bold">Konfirmasi Password Baru</label>
-                            <input type="password" name="new_password_confirmation" 
-                                   class="form-control custom-input" 
-                                   placeholder="Ulangi password baru" required>
+                            <input type="password" name="new_password_confirmation" class="form-control custom-input" placeholder="Ulangi password" required>
                         </div>
-
-                        <button type="submit" class="btn btn-update w-100 w-md-auto">
-                            Simpan Perubahan Password
-                        </button>
+                        <button type="submit" class="btn btn-dwj w-100">Update Keamanan Akun</button>
                     </form>
                 </div>
             </div>
@@ -128,82 +138,175 @@
     </div>
 </div>
 
+{{-- Modal Detail Pesanan --}}
+<div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow">
+            <div class="modal-header border-0 bg-light px-4 py-3">
+                <h5 class="modal-title fw-bold" style="color: var(--primary-color);">
+                    <i class="bi bi-receipt me-2"></i>Rincian Transaksi <span id="display-id" class="text-muted"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="loading-spinner" class="text-center py-5">
+                    <div class="spinner-grow text-warning" role="status"></div>
+                    <p class="text-muted small mt-2">Menyusun detail produk...</p>
+                </div>
+                <div id="detail-content" class="d-none">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="text-muted">
+                                <th>Produk</th>
+                                <th class="text-center">Jumlah</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-detail-body">
+                            {{-- Data via AJAX --}}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light" style="border-radius: 10px;">
+                        <span class="fw-bold text-dark text-uppercase">Total Pembayaran</span>
+                        <span class="fs-5 fw-bold text-success" id="total-bayar"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <style>
-    /* Styling Input Umum */
+    /* Global Forest Green Theme */
+    :root {
+        --primary-color: #3b5d50;
+        --secondary-color: #f9bf29;
+        --light-bg: #f8f9fa;
+    }
+
+    .container { font-family: 'Poppins', sans-serif; }
+
+    /* Card & Nav Styling */
+    .card-profile {
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-pills .nav-link {
+        color: #495057;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(59, 93, 80, 0.2);
+    }
+
+    .nav-pills .nav-link:hover:not(.active) {
+        background-color: #e9ecef;
+        color: var(--primary-color);
+    }
+
+    /* Input Styling */
     .custom-input {
-        border-radius: 30px !important;
-        padding: 12px 20px !important;
-        border: 1px solid #dee2e6 !important;
-        background-color: #fff !important;
+        border-radius: 10px !important;
+        padding: 12px 15px !important;
+        border: 1px solid #ced4da !important;
     }
 
-    .custom-input[readonly] {
-        background-color: #f8f9fa !important;
+    .custom-input:focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.25rem rgba(59, 93, 80, 0.1) !important;
     }
 
-    /* Error Style */
-    .is-invalid {
-        border-color: #dc3545 !important;
+    /* Badge Customization */
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.75rem;
     }
 
-    /* Container untuk Input Password */
-    .pass-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        width: 100%;
+    /* Button Styling */
+    .btn-dwj {
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 10px;
+        padding: 10px 25px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
     }
 
-    /* Styling Ikon Mata */
-    .toggle-password-icon {
-        position: absolute;
-        right: 20px;
-        cursor: pointer;
-        color: #6c757d;
-        font-size: 1.2rem;
-        z-index: 10;
-        transition: color 0.2s;
+    .btn-dwj:hover {
+        background-color: #2d463d;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    .toggle-password-icon:hover {
-        color: #3b5d50;
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
     }
 
-    .pass-input {
-        padding-right: 50px !important;
-    }
-
-    /* Tombol Update */
-    .btn-update {
-        background-color: #3b5d50 !important;
-        color: white !important;
-        border-radius: 30px !important;
-        padding: 10px 30px !important;
-        border: none !important;
-        font-weight: bold;
-    }
-
-    .btn-update:hover {
-        background-color: #2d463d !important;
-        color: white !important;
+    .table thead th {
+        background-color: var(--light-bg);
+        color: var(--primary-color);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
     }
 </style>
 @endsection
 
 @push('scripts')
 <script>
-    document.querySelectorAll('.toggle-password-icon').forEach(icon => {
-        icon.addEventListener('click', function () {
-            const input = this.parentElement.querySelector('.pass-input');
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.classList.remove('bi-eye');
-                this.classList.add('bi-eye-slash');
-            } else {
-                input.type = 'password';
-                this.classList.remove('bi-eye-slash');
-                this.classList.add('bi-eye');
-            }
+    document.querySelectorAll('.btn-detail').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const modalElement = document.getElementById('modalDetail');
+            const modal = new bootstrap.Modal(modalElement);
+            
+            document.getElementById('display-id').innerText = '#DWJ-' + id;
+            document.getElementById('loading-spinner').classList.remove('d-none');
+            document.getElementById('detail-content').classList.add('d-none');
+            modal.show();
+
+            fetch(`/profile/detail/${id}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    let rows = '';
+                    data.details.forEach(item => {
+                        rows += `
+                            <tr>
+                                <td class="py-3">
+                                    <div class="fw-bold text-dark">${item.nama_barang}</div>
+                                    <small class="text-muted">Rp ${(Math.floor(item.jumlah_harga / item.jumlah)).toLocaleString('id-ID')}</small>
+                                </td>
+                                <td class="text-center py-3">${item.jumlah} pcs</td>
+                                <td class="text-end py-3 fw-bold text-dark">Rp ${item.jumlah_harga.toLocaleString('id-ID')}</td>
+                            </tr>
+                        `;
+                    });
+
+                    document.getElementById('table-detail-body').innerHTML = rows;
+                    document.getElementById('total-bayar').innerText = 'Rp ' + data.total;
+                    
+                    document.getElementById('loading-spinner').classList.add('d-none');
+                    document.getElementById('detail-content').classList.remove('d-none');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memuat data.');
+                    modal.hide();
+                });
         });
     });
 </script>

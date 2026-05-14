@@ -43,16 +43,17 @@
                 <div class="product-item"
                      style="cursor: pointer;"
                      onclick="showProductModal(
-                         '{{ addslashes($item->nama_barang) }}',
-                         '{{ asset('storage/barang/' . $item->gambar) }}',
-                         '{{ number_format($item->harga, 0, ',', '.') }}',
-                         {{ $item->harga }},
-                         '{{ addslashes($item->bahan) }}',
-                         '{{ addslashes($item->ukuran) }}',
-                         {{ $item->stok }},
-                         '{{ addslashes($item->deskripsi ?? '-') }}',
-                         {{ $item->id }}
-                     )">
+                            '{{ addslashes($item->nama_barang) }}',
+                            '{{ asset('storage/barang/' . $item->gambar) }}',
+                            '{{ number_format($item->harga, 0, ',', '.') }}',
+                            {{ $item->harga }},
+                            '{{ addslashes($item->kategori->nama_kategori ?? 'Tanpa Kategori') }}', {{-- TAMBAH KATEGORI --}}
+                            '{{ addslashes($item->bahan->nama_bahan ?? 'Tanpa Bahan') }}', {{-- PERBAIKI BAHAN --}}
+                            '{{ addslashes($item->ukuran) }}',
+                            {{ $item->stok }},
+                            '{{ addslashes($item->deskripsi ?? '-') }}',
+                            {{ $item->id }}
+                        )">
                     <img src="{{ asset('storage/barang/'.$item->gambar) }}" class="img-fluid product-thumbnail">
                     <h3 class="product-title">{{ $item->nama_barang }}</h3>
                     <strong class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</strong>
@@ -225,7 +226,11 @@
                             <table class="table table-borderless mb-3" style="font-size: 0.93rem;">
                                 <tbody>
                                     <tr>
-                                        <td class="text-muted ps-0" style="width: 110px;">Bahan</td>
+                                        <td class="text-muted ps-0" style="width: 110px;">Kategori</td>
+                                        <td class="fw-semibold" id="modal-kategori"></td> {{-- TAMBAHKAN INI --}}
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted ps-0">Bahan</td>
                                         <td class="fw-semibold" id="modal-bahan"></td>
                                     </tr>
                                     <tr>
@@ -326,37 +331,47 @@
 {{-- ===== SCRIPTS ===== --}}
 @push('scripts')
 <script>
-    // ===== VARIABEL GLOBAL =====
     let modalHargaSatuan = 0;
-    let modalMaxStok     = 1;
+    let modalMaxStok = 0;
 
-    // ===== FUNGSI MODAL PRODUK =====
-    function showProductModal(nama, gambar, hargaFormatted, hargaAngka, bahan, ukuran, stok, deskripsi, id) {
-        // Reset qty
-        document.getElementById('modal-qty').value       = 1;
-        document.getElementById('modal-qty-input').value = 1;
-
+    function showProductModal(nama, gambar, hargaFormatted, hargaAngka, kategori, bahan, ukuran, stok, deskripsi, id) {
         modalHargaSatuan = hargaAngka;
-        modalMaxStok     = stok;
+        modalMaxStok = stok;
 
-        document.getElementById('modal-nama').textContent      = nama.toUpperCase();
-        document.getElementById('modal-gambar').src            = gambar;
-        document.getElementById('modal-harga').textContent     = 'Rp ' + hargaFormatted;
-        document.getElementById('modal-bahan').textContent     = bahan;
-        document.getElementById('modal-ukuran').textContent    = ukuran;
+        // Cek stok, jika > 0 set qty 1, jika 0 set qty 0
+        let initialQty = stok > 0 ? 1 : 0;
+        document.getElementById('modal-qty').value = initialQty;
+        document.getElementById('modal-qty-input').value = initialQty;
+
+        document.getElementById('modal-nama').textContent = nama.toUpperCase();
+        document.getElementById('modal-gambar').src = gambar;
+        document.getElementById('modal-harga').textContent = 'Rp ' + hargaFormatted;
+        document.getElementById('modal-kategori').textContent = kategori;
+        document.getElementById('modal-bahan').textContent = bahan;
+        document.getElementById('modal-ukuran').textContent = ukuran;
         document.getElementById('modal-deskripsi').textContent = deskripsi;
 
-        // Badge stok
         const stokEl = document.getElementById('modal-stok');
+        const btnAddCart = document.querySelector('.btn-add-cart');
+        const btnQtys = document.querySelectorAll('.btn-qty');
+
+        // Logika untuk disable tombol saat stok habis
         if (stok > 0) {
-            stokEl.innerHTML = `<span class="badge-stok-ada">✔ Tersedia (${stok})</span>`;
+            stokEl.innerHTML = `<span style="color: #27ae60; font-weight: 600;">✔ Tersedia (${stok})</span>`;
+            btnAddCart.disabled = false;
+            btnAddCart.style.opacity = '1';
+            btnAddCart.textContent = "ADD TO CART";
+            btnQtys.forEach(btn => btn.disabled = false);
         } else {
-            stokEl.innerHTML = `<span class="badge-stok-habis">✘ Habis</span>`;
+            stokEl.innerHTML = `<span style="color: #e74c3c; font-weight: 600;">✘ Habis</span>`;
+            btnAddCart.disabled = true; // Nonaktifkan tombol cart
+            btnAddCart.style.opacity = '0.5';
+            btnAddCart.textContent = "STOK HABIS";
+            btnQtys.forEach(btn => btn.disabled = true); // Nonaktifkan tombol +/-
         }
 
         updateTotal();
 
-        // Update action form
         const form = document.getElementById('modal-cart-form');
         form.action = form.action.replace(/\/\d+$/, '/' + id);
 
@@ -364,23 +379,30 @@
         modal.show();
     }
 
-    // ===== FUNGSI QTY +/- =====
     function changeQty(delta) {
+        if (modalMaxStok <= 0) return; // Jangan ubah jika stok kosong
+
         const input = document.getElementById('modal-qty');
         let val = parseInt(input.value) + delta;
+        
         if (val < 1) val = 1;
         if (val > modalMaxStok) val = modalMaxStok;
+        
         input.value = val;
-        document.getElementById('modal-qty-input').value = val;
         updateTotal();
     }
 
-    // ===== FUNGSI UPDATE TOTAL =====
     function updateTotal() {
-        const qty   = parseInt(document.getElementById('modal-qty').value) || 1;
-        const total = modalHargaSatuan * qty;
+        let inputQty = parseInt(document.getElementById('modal-qty').value);
+        
+        // Jika input bukan angka (kosong), set berdasarkan stok
+        if (isNaN(inputQty)) {
+            inputQty = modalMaxStok > 0 ? 1 : 0;
+        }
+
+        const total = modalHargaSatuan * inputQty;
         document.getElementById('modal-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
-        document.getElementById('modal-qty-input').value   = qty;
+        document.getElementById('modal-qty-input').value = inputQty;
     }
 </script>
 @endpush

@@ -64,7 +64,7 @@ Route::middleware(['auth','customer'])->group(function () {
     ->name('checkout.hapus');
     Route::post('/checkout/tambah/{id}', [pesananController::class, 'tambah'])->name('checkout.tambah');
     Route::post('/checkout/kurang/{id}', [pesananController::class, 'kurang'])->name('checkout.kurang');
-    
+   
 
 
 
@@ -87,28 +87,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
 });
 
-Route::get('/profile', function () {
-
-    if(auth()->user()->role == 'admin'){
-
-        return view('profile');
-
-    } elseif(auth()->user()->role == 'customer'){
-
-        return view('profile_c');
-
-    } elseif(auth()->user()->role == 'kasir'){
-
-        return view('profile_k');
-
-    }
-
-    return redirect('/');
-
-})->middleware('auth')->name('profile');
+// Lempar semua urusan profil ke Controller
+Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth')->name('profile');
 // ATAU jika menggunakan Controller (Disarankan)
 // Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-
+Route::get('/profile/detail/{id}', [ProfileController::class, 'getDetail'])->middleware('auth');
 Route::middleware(['auth', 'kasir'])->group(function () {
 
     Route::get('/dashboard-kasir', [CustomOrderController::class, 'index'])

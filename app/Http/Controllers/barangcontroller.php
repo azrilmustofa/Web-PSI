@@ -5,44 +5,44 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\barang;
 use App\Models\Kategori;
+use App\Models\Bahan; // Pastikan ini ada
 use Illuminate\Support\Facades\DB;
-
 
 class barangcontroller extends Controller
 {
     public function index()
     {
-        $data = barang::all();
-        $kategori = Kategori::all(); // Tambahkan baris ini
+        // Gunakan Eager Loading agar tidak berat saat load data bahan & kategori
+        $data = barang::with(['kategori', 'bahan'])->get();
+        $kategori = Kategori::all();
+        $bahan = Bahan::all(); 
     
-    // Kirim $kategori ke view agar modal tidak error
-    return view('barang.index', [
-        'dataBarang' => $data,
-        'kategori' => $kategori
-    ]);
+        return view('barang.index', [
+            'dataBarang' => $data,
+            'kategori' => $kategori,
+            'bahan' => $bahan
+        ]);
     }
 
     public function detail($id)
     {
-        $data = barang::findOrFail($id); 
-        
-        // PENTING: Nama view ini harus sama dengan nama file blade yang Anda buat 
-        // di resources/views/customer/detail_produk.blade.php
+        $data = barang::with(['kategori', 'bahan'])->findOrFail($id); 
         return view('customer.detail_produk', compact('data')); 
     }
 
     public function create()
-{
-    $kategori = Kategori::all(); // Ambil semua kategori dari database
-    return view('barang.create', compact('kategori'));
-}
+    {
+        $kategori = Kategori::all();
+        $bahan = Bahan::all(); 
+        return view('barang.create', compact('kategori', 'bahan'));
+    }
 
     public function store(Request $request)
     {
-        // 1. Validasi harus diperketat, tambahkan kategori_id
         $request->validate([
             'nama_barang' => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategoris,id', // Pastikan ID kategori ada di tabel kategoris
+            'kategori_id' => 'required|exists:kategoris,id',
+            'bahan_id'    => 'required|exists:bahans,id', // Validasi bahan_id
             'harga'       => 'required|numeric|min:0',
             'stok'        => 'required|integer|min:0',
             'gambar'      => 'required|image|mimes:jpg,jpeg,png|max:2048'
@@ -51,112 +51,84 @@ class barangcontroller extends Controller
         $data = new barang();
         $data->nama_barang = $request->nama_barang;
         $data->kategori_id = $request->kategori_id;
+        $data->bahan_id    = $request->bahan_id; // Simpan ID Bahan
         $data->harga       = $request->harga;
-        $data->bahan       = $request->bahan;
         $data->ukuran      = $request->ukuran;
         $data->stok        = $request->stok;
         $data->deskripsi   = $request->deskripsi;
 
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
-            
-            // Gunakan time() agar nama file unik (mencegah file tertimpa jika namanya sama)
             $namaFile = time() . '_' . $file->getClientOriginalName(); 
-            
             $file->storeAs('barang', $namaFile, 'public');
             $data->gambar = 'barang/' . $namaFile;
         }
 
         $data->save();
-
-        // Gunakan route() lebih disarankan daripada hardcode URL '/admin'
         return redirect('/admin')->with('Berhasil', 'Data Berhasil Ditambahkan');
     }
 
     public function update(Request $request, $id)
-{
-    // 1. Validasi data yang masuk
-    $request->validate([
-        'nama_barang' => 'required',
-        'kategori_id' => 'required|exists:kategoris,id',
-        'harga'       => 'required|numeric',
-        'stok'        => 'required|integer',
-        'gambar'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-    ]);
+    {
+        $request->validate([
+            'nama_barang' => 'required',
+            'kategori_id' => 'required|exists:kategoris,id',
+            'bahan_id'    => 'required|exists:bahans,id',
+            'harga'       => 'required|numeric',
+            'stok'        => 'required|integer',
+            'gambar'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
 
-    $barang = barang::findOrFail($id);
-    
-    // 2. Update data teks
-    $barang->nama_barang = $request->nama_barang;
-    $barang->kategori_id = $request->kategori_id; // WAJIB: Tambahkan ini agar kategori terupdate
-    $barang->harga       = $request->harga;
-    $barang->bahan       = $request->bahan;
-    $barang->ukuran      = $request->ukuran;
-    $barang->stok        = $request->stok;
-    $barang->deskripsi = $request->deskripsi;
+        $barang = barang::findOrFail($id);
+        $barang->nama_barang = $request->nama_barang;
+        $barang->kategori_id = $request->kategori_id;
+        $barang->bahan_id    = $request->bahan_id; 
+        $barang->harga       = $request->harga;
+        $barang->ukuran      = $request->ukuran;
+        $barang->stok        = $request->stok;
+        $barang->deskripsi   = $request->deskripsi;
 
-    // 3. Logika Update Gambar
-    if ($request->hasFile('gambar')) {
-        // Hapus gambar lama dari storage jika ada (agar tidak memenuhi server)
-        if ($barang->gambar && file_exists(storage_path('app/public/' . $barang->gambar))) {
-            unlink(storage_path('app/public/' . $barang->gambar));
+        if ($request->hasFile('gambar')) {
+            if ($barang->gambar && file_exists(storage_path('app/public/' . $barang->gambar))) {
+                unlink(storage_path('app/public/' . $barang->gambar));
+            }
+
+            $file = $request->file('gambar');
+            $namaFile = time() . '_' . $file->getClientOriginalName(); 
+            $file->storeAs('barang', $namaFile, 'public');
+            $barang->gambar = 'barang/' . $namaFile;
         }
 
-        $file = $request->file('gambar');
-        // Gunakan format nama file yang konsisten dengan store
-        $namaFile = time() . '_' . $file->getClientOriginalName(); 
-        $file->storeAs('barang', $namaFile, 'public');
-        
-        $barang->gambar = 'barang/' . $namaFile;
+        $barang->save();
+        return redirect('/admin')->with('Berhasil', 'Data berhasil diupdate');
     }
 
-    // 4. Simpan perubahan
-    $barang->save(); // save() lebih disarankan untuk instance model yang sudah ada
-
-    return redirect('/admin')->with('Berhasil', 'Data berhasil diupdate');
-}
-
-        public function destroy($id)
+    public function destroy($id)
     {
         $barang = barang::findOrFail($id);
-
-        // hapus gambar kalau ada
         if ($barang->gambar && file_exists(storage_path('app/public/' . $barang->gambar))) {
             unlink(storage_path('app/public/' . $barang->gambar));
         }
-
         $barang->delete();
 
-        return redirect()->route('barang.index')
-            ->with('success', 'Barang berhasil dihapus');
-    }
-
-    public function pdfbarang() {
-        $data = barang::all();
-        return view ('barang.pdfbarang', ['dataBarang' => $data]);
+        return redirect('/admin')->with('success', 'Barang berhasil dihapus');
     }
 
     public function shop(Request $request, $kategori = null)
     {
-        $query = barang::query();
+        $query = barang::with(['kategori', 'bahan']); // Tambahkan relasi agar tidak lambat
 
-        // Filter kategori
         if ($kategori) {
             $query->whereHas('kategori', function($q) use ($kategori) {
-
-                // ubah slug URL jadi format nama kategori
                 $namaKategori = str_replace('-', ' ', $kategori);
-
                 $q->whereRaw('LOWER(nama_kategori) = ?', [strtolower($namaKategori)]);
             });
         }
 
-        // Search
         if ($request->search) {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
-        // Sort
         match($request->sort) {
             'latest' => $query->latest(),
             'low'    => $query->orderBy('harga', 'asc'),
@@ -164,38 +136,31 @@ class barangcontroller extends Controller
             default  => $query->orderBy('id', 'asc'),
         };
 
+        // PENTING: Nama variabel harus $products agar sesuai dengan View shop.blade.php kamu
         $products = $query->paginate(20);
 
         return view('customer.shop', compact('products'));
     }
 
-   public function home()
-{
-    $bestSeller = barang::select(
-            'barang.*',
-            DB::raw('SUM(detail_pesanan.jumlah) as total_terjual')
-        )
-        ->join('detail_pesanan', 'barang.id', '=', 'detail_pesanan.barang_id')
-        ->join('pesanan', 'detail_pesanan.pesanan_id', '=', 'pesanan.id')
-        ->where('pesanan.status', 1)
-        ->groupBy(
-            'barang.id',
-            'barang.nama_barang',
-            'barang.kategori_id',
-            'barang.harga',
-            'barang.bahan',
-            'barang.ukuran',
-            'barang.stok',
-            'barang.gambar',
-            'barang.created_at',
-            'barang.updated_at'
-        )
-        ->orderByDesc('total_terjual')
-        ->take(3)
-        ->get();
+    public function home()
+    {
+        $bestSeller = barang::with(['kategori', 'bahan'])
+            ->select('barang.*', DB::raw('SUM(detail_pesanan.jumlah) as total_terjual'))
+            ->join('detail_pesanan', 'barang.id', '=', 'detail_pesanan.barang_id')
+            ->join('pesanan', 'detail_pesanan.pesanan_id', '=', 'pesanan.id')
+            ->where('pesanan.status', 1)
+            ->groupBy(
+                'barang.id', 'barang.nama_barang', 'barang.kategori_id', 'barang.bahan_id', 
+                'barang.harga', 'barang.ukuran', 'barang.stok', 'barang.gambar', 
+                'barang.deskripsi', 'barang.created_at', 'barang.updated_at'
+            )
+            ->orderByDesc('total_terjual')
+            ->take(3)
+            ->get();
 
-    return view('customer.index', compact('bestSeller'));
-}   
+        return view('customer.index', compact('bestSeller'));
+    }
+
     public function about()
     {
         return view('customer.about');
@@ -208,42 +173,25 @@ class barangcontroller extends Controller
 
     public function kategori(Request $request, $slug)
     {
-        $query = barang::query();
+        $query = barang::with(['kategori', 'bahan']);
 
-        // kategori utama
-        $kategoriUtama = [
-            'meja',
-            'kursi',
-            'lemari',
-            'tempat tidur',
-            'sofa',
-            'rak',
-            'kitchen set'
-        ];
+        $kategoriUtama = ['meja', 'kursi', 'lemari', 'tempat tidur', 'sofa', 'rak', 'kitchen set'];
 
-        // Jika perabot lainnya
         if ($slug == 'perabot-lainnya') {
-
             $query->whereHas('kategori', function($q) use ($kategoriUtama) {
                 $q->whereNotIn('nama_kategori', $kategoriUtama);
             });
-
         } else {
-
-            // kategori normal
             $namaKategori = str_replace('-', ' ', $slug);
-
             $query->whereHas('kategori', function($q) use ($namaKategori) {
                 $q->where('nama_kategori', ucwords($namaKategori));
             });
         }
 
-        // Search
         if ($request->search) {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
-        // Sort
         match($request->sort) {
             'latest' => $query->latest(),
             'low'    => $query->orderBy('harga', 'asc'),
@@ -255,6 +203,4 @@ class barangcontroller extends Controller
 
         return view('customer.shop_cat', compact('products', 'slug'));
     }
-
-
 }
