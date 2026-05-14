@@ -14,9 +14,10 @@ class pesanancontroller extends Controller
     // ===============================
     // TAMBAH CEPAT (ICON CROSS)
     // ===============================
-    public function quickAdd($id)
+    public function quickAdd(Request $request, $id)
     {
-        $jumlahPesan = 1;
+        // Baca quantity dari request, default 1
+        $jumlahPesan = max(1, (int) $request->input('quantity', 1));
 
         $barang = barang::findOrFail($id);
 
@@ -27,31 +28,29 @@ class pesanancontroller extends Controller
         $pesanan = pesanan::firstOrCreate(
             ['user_id' => Auth::id(), 'status' => 0],
             [
-                'tanggal' => now(),
+                'tanggal'      => now(),
                 'jumlah_harga' => 0,
-                'kode' => 'ORD-' . time()
+                'kode'         => 'ORD-' . time()
             ]
         );
 
-        // cek detail
         $detail = detail_pesanan::where('pesanan_id', $pesanan->id)
             ->where('barang_id', $barang->id)
             ->first();
 
         if ($detail) {
-            $detail->jumlah += $jumlahPesan;
+            $detail->jumlah       += $jumlahPesan;
             $detail->jumlah_harga += $barang->harga * $jumlahPesan;
             $detail->save();
         } else {
             detail_pesanan::create([
-                'pesanan_id' => $pesanan->id,
-                'barang_id' => $barang->id,
-                'jumlah' => $jumlahPesan,
+                'pesanan_id'   => $pesanan->id,
+                'barang_id'    => $barang->id,
+                'jumlah'       => $jumlahPesan,
                 'jumlah_harga' => $barang->harga * $jumlahPesan
             ]);
         }
 
-        // hitung ulang total
         $pesanan->jumlah_harga = detail_pesanan::where('pesanan_id', $pesanan->id)
             ->sum('jumlah_harga');
         $pesanan->save();
@@ -59,7 +58,6 @@ class pesanancontroller extends Controller
         return redirect()->route('customer.checkout')
             ->with('success', 'Barang berhasil masuk keranjang');
     }
-
 
     public function pesan(Request $request, $id)
     {
@@ -149,12 +147,15 @@ class pesanancontroller extends Controller
    
     public function checkout()
     {
-        $data = pesanan::with('detail.barang')
-            ->where('user_id', Auth::id())
+        $pesanan = pesanan::where('user_id', Auth::id())
             ->where('status', 0)
             ->first();
 
-        return view('customer.chart', compact('data'));
+        $pesanan_details = $pesanan
+            ? $pesanan->detail()->with('barang')->get()
+            : collect();
+
+        return view('customer.chart', compact('pesanan', 'pesanan_details'));
     }
 
     // ===============================
@@ -182,8 +183,18 @@ class pesanancontroller extends Controller
     }
 
 
-    public function bayar()
+    // Ganti method bayar() di pesanancontroller.php
+    public function bayar(Request $request)
     {
+        $request->validate([
+            'nama_penerima'     => 'required|string',
+            'no_telepon'        => 'required|string',
+            'alamat'            => 'required|string',
+            'kota'              => 'required|string',
+            'kode_pos'          => 'required|string',
+            'metode_pembayaran' => 'required|string',
+        ]);
+
         $pesanan = pesanan::with('detail.barang')
             ->where('user_id', Auth::id())
             ->where('status', 0)
@@ -194,22 +205,26 @@ class pesanancontroller extends Controller
                 ->with('error', 'Tidak ada pesanan untuk dibayar');
         }
 
-        // 🔽 Kurangi stok barang
         foreach ($pesanan->detail as $item) {
-            $barang = $item->barang;
-
-            if ($barang->stok < $item->jumlah) {
+            if ($item->barang->stok < $item->jumlah) {
                 return redirect()->route('customer.checkout')
-                    ->with('error', 'Stok barang tidak mencukupi');
+                    ->with('error', 'Stok ' . $item->barang->nama_barang . ' tidak mencukupi');
             }
-
-            $barang->stok -= $item->jumlah;
-            $barang->save();
+            $item->barang->stok -= $item->jumlah;
+            $item->barang->save();
         }
 
-        // 🔽 Update status pesanan → BERHASIL
-        $pesanan->status = 1;
-        $pesanan->save();
+        // Simpan data pengiriman & pembayaran ke pesanan
+        $pesanan->update([
+            'status'            => 1,
+            'nama_penerima'     => $request->nama_penerima,
+            'no_telepon'        => $request->no_telepon,
+            'alamat'            => $request->alamat,
+            'kota'              => $request->kota,
+            'kode_pos'          => $request->kode_pos,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'catatan'           => $request->catatan,
+        ]);
 
         return redirect()->route('customer.checkout')
             ->with('success', 'Pembayaran berhasil! Pesanan sedang diproses.');

@@ -55,7 +55,13 @@
                             <input type="text" class="form-control" name="ukuran" value="{{ $data->ukuran }}" required>
                         </div>
 
-                        <!-- Baris 4: Update Gambar -->
+                        <!-- baris 4 -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="deskripsi" value="{{ $data->deskripsi }}" required>
+                        </div>
+
+                        <!-- Baris 5: Update Gambar -->
                         <div class="col-12 mb-3">
                             <label class="form-label fw-bold">Update Gambar Produk</label>
                             <div class="d-flex align-items-start gap-3">

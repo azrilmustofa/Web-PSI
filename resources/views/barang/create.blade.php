@@ -53,7 +53,13 @@
                             <input type="text" class="form-control" name="ukuran" placeholder="Contoh: 120x60x75 cm" required>
                         </div>
 
-                        <!-- Baris 4: Upload Gambar -->
+                        <!-- Baris 4: Upload Deskripsi -->
+                        <div class="col-12 mb-2">
+                            <label class="form-label fw-bold">Deskripsi Produk<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="deskripsi" placeholder="Masukkan Deskripsi Produk" required>
+                        </div>
+
+                        <!-- Baris 5: Upload Gambar -->
                         <div class="col-12 mb-2">
                             <label class="form-label fw-bold">Gambar Produk <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" name="gambar" id="gambar" accept="image/*" required>

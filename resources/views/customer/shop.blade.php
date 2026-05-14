@@ -150,7 +150,36 @@
 
         {{-- Pagination --}}
         <div class="d-flex justify-content-center mt-5">
-            {{ $products->appends(request()->query())->links() }}
+            @if ($products->hasPages())
+            <ul class="pagination">
+
+                {{-- Prev --}}
+                @if ($products->onFirstPage())
+                    <li class="page-item disabled"><span class="page-link">←</span></li>
+                @else
+                    <li class="page-item"><a class="page-link" href="{{ $products->previousPageUrl() }}&{{ http_build_query(request()->except('page')) }}">←</a></li>
+                @endif
+
+                {{-- Angka --}}
+                @foreach ($products->appends(request()->query())->getUrlRange(1, $products->lastPage()) as $page => $url)
+                    @if ($page == $products->currentPage())
+                        <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                    @elseif ($page == 1 || $page == $products->lastPage() || abs($page - $products->currentPage()) <= 2)
+                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                    @elseif (abs($page - $products->currentPage()) == 3)
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    @endif
+                @endforeach
+
+                {{-- Next --}}
+                @if ($products->hasMorePages())
+                    <li class="page-item"><a class="page-link" href="{{ $products->nextPageUrl() }}&{{ http_build_query(request()->except('page')) }}">→</a></li>
+                @else
+                    <li class="page-item disabled"><span class="page-link">→</span></li>
+                @endif
+
+            </ul>
+            @endif
         </div>
 
     </div>
@@ -237,48 +266,7 @@
 
 {{-- ===== STYLES ===== --}}
 @push('styles')
-<style>
-    /* Hilangkan arrow input number */
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    /* Input qty */
-    .qty-input {
-        width: 70px;
-        font-size: 1rem;
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    /* Tombol qty +/- */
-    .btn-qty {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: 2px solid #3b5d50;
-        background: #fff;
-        color: #3b5d50;
-        font-size: 1.1rem;
-        font-weight: 700;
-        cursor: pointer;
-        line-height: 1;
-        transition: all 0.2s;
-    }
-    .btn-qty:hover {
-        background: #3b5d50;
-        color: #fff;
-    }
-
-    /* Badge stok */
-    .badge-stok-ada   { background: #e6f4ea; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
-    .badge-stok-habis { background: #fdecea; color: #c62828; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
-</style>
+<link rel="stylesheet" href="{{ asset('template_customer/css/shop.css') }}">
 @endpush
 
 {{-- ===== SCRIPTS ===== --}}

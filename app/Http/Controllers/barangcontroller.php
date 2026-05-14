@@ -50,11 +50,12 @@ class barangcontroller extends Controller
 
         $data = new barang();
         $data->nama_barang = $request->nama_barang;
-        $data->kategori_id = $request->kategori_id; // Masukkan kategori_id
+        $data->kategori_id = $request->kategori_id;
         $data->harga       = $request->harga;
         $data->bahan       = $request->bahan;
         $data->ukuran      = $request->ukuran;
         $data->stok        = $request->stok;
+        $data->deskripsi   = $request->deskripsi;
 
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
@@ -92,6 +93,7 @@ class barangcontroller extends Controller
     $barang->bahan       = $request->bahan;
     $barang->ukuran      = $request->ukuran;
     $barang->stok        = $request->stok;
+    $barang->deskripsi = $request->deskripsi;
 
     // 3. Logika Update Gambar
     if ($request->hasFile('gambar')) {
