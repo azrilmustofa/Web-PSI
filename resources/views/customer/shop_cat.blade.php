@@ -103,29 +103,40 @@
                     </form>
                 </div>
 
+
                 {{-- Daftar Kategori --}}
                 <div class="sidebar-box">
                     <h5 class="sidebar-title">Product Categories</h5>
                     <ul class="sidebar-cat-list">
+
                         @php
-                        $categories = [
-                            ['nama' => 'Meja',             'slug' => 'meja'],
-                            ['nama' => 'Kursi',            'slug' => 'kursi'],
-                            ['nama' => 'Lemari',           'slug' => 'lemari'],
-                            ['nama' => 'Tempat Tidur',     'slug' => 'tempat-tidur'],
-                            ['nama' => 'Sofa',             'slug' => 'sofa'],
-                            ['nama' => 'Rak',              'slug' => 'rak'],
-                            ['nama' => 'Kitchen Set',      'slug' => 'kitchen-set'],
-                            ['nama' => 'Perabot Lainnya',  'slug' => 'perabot-lainnya'],
-                        ];
+                            $urutanKategori = [
+                                'meja', 'kursi', 'lemari', 'tempat tidur',
+                                'sofa', 'rak', 'kitchen set',
+                            ];
+
+                            $kategoriSorted = $kategoriList->sortBy(function($cat) use ($urutanKategori) {
+                                $index = array_search(strtolower($cat->nama_kategori), $urutanKategori);
+                                return $index !== false ? $index : 999;
+                            });
                         @endphp
-                        @foreach ($categories as $cat)
-                        <li class="{{ $slug == $cat['slug'] ? 'active' : '' }}">
-                            <a href="{{ route('customer.kategori', $cat['slug']) }}">
-                                {{ $cat['nama'] }}
+
+                        @foreach ($kategoriSorted as $cat)
+                        @php $catSlug = Str::slug($cat->nama_kategori); @endphp
+                        <li class="{{ $slug == $catSlug ? 'active' : '' }}">
+                            <a href="{{ route('customer.kategori', $catSlug) }}">
+                                {{ $cat->nama_kategori }}
                             </a>
                         </li>
                         @endforeach
+
+                        {{-- Perabot Lainnya selalu di paling bawah --}}
+                        <li class="{{ $slug == 'perabot-lainnya' ? 'active' : '' }}">
+                            <a href="{{ route('customer.kategori', 'perabot-lainnya') }}">
+                                Perabot Lainnya
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
             </div>

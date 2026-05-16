@@ -43,11 +43,13 @@ Route::get('/detail/{id}', [barangcontroller::class, 'detail'])
 
 Route::get('/about', [barangcontroller::class, 'about'])->name('customer.about'); 
 Route::get('/shop/{kategori?}', [barangcontroller::class, 'shop'])->name('customer.shop');
+Route::get('/custom', [barangcontroller::class, 'custom'])->name('customer.custom');
 Route::get('/kategori/{slug}', [barangcontroller::class, 'kategori'])->name('customer.kategori');
 Route::get('/contact', [barangcontroller::class, 'contact'])->name('customer.contact'); 
 Route::middleware(['auth','customer'])->group(function () {
      
-
+    Route::post('/custom-orders', [barangcontroller::class, 'storeCustom'])
+        ->name('custom-orders.store');
     Route::get('/checkout', [pesanancontroller::class, 'checkout'])
     ->name('customer.checkout');
     Route::post('/pesan/{id}', [pesanancontroller::class, 'pesan'])
@@ -64,7 +66,7 @@ Route::middleware(['auth','customer'])->group(function () {
     ->name('checkout.hapus');
     Route::post('/checkout/tambah/{id}', [pesananController::class, 'tambah'])->name('checkout.tambah');
     Route::post('/checkout/kurang/{id}', [pesananController::class, 'kurang'])->name('checkout.kurang');
-   
+
 
 
 
@@ -84,6 +86,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/data-pengguna', [admincontroller::class, 'index'])->name('datpen.index');
     Route::post('/data-pengguna/store', [admincontroller::class, 'store'])
         ->name('datpen.store');
+    Route::post('/simpan-kategori', [barangcontroller::class, 'storeKategori'])->name('kategori.store');
+    Route::post('/simpan-bahan', [barangcontroller::class, 'storeBahan'])->name('bahan.store');
     
 });
 

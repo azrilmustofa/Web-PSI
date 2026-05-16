@@ -14,6 +14,9 @@
                 <li class="nav-item {{ Request::is('shop') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('customer.shop') }}">Shop</a>
                 </li>
+                <li class="nav-item {{ Request::is('custom') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('customer.custom') }}">Custom</a>
+                </li>
                 <li class="nav-item {{ Request::is('about') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('customer.about') }}">About us</a>
                 </li>

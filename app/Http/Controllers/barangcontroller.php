@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\barang;
 use App\Models\Kategori;
 use App\Models\Bahan; // Pastikan ini ada
+use App\Models\CustomOrder; // Pastikan ini ada
+
 use Illuminate\Support\Facades\DB;
 
 class barangcontroller extends Controller
@@ -66,6 +68,64 @@ class barangcontroller extends Controller
 
         $data->save();
         return redirect('/admin')->with('Berhasil', 'Data Berhasil Ditambahkan');
+
+        
+    }
+
+
+    public function storeKategori(Request $request)
+    {
+        if (Kategori::where('nama_kategori', $request->nama_kategori)->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Kategori "' . $request->nama_kategori . '" sudah ada!'
+            ]);
+        }
+
+        $request->validate([
+            'nama_kategori' => 'required|string|max:255',
+            'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $gambarPath = null;
+        if ($request->hasFile('gambar')) {
+            $file       = $request->file('gambar');
+            $namaFile   = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('kategori', $namaFile, 'public');
+            $gambarPath = 'kategori/' . $namaFile;
+        }
+
+        Kategori::create([
+            'nama_kategori' => $request->nama_kategori,
+            'gambar'        => $gambarPath,
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Kategori berhasil disimpan!'
+        ]);
+    }
+
+    public function storeBahan(Request $request)
+    {
+        // Cek duplikat manual
+        if (Bahan::where('nama_bahan', $request->nama_bahan)->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Bahan "' . $request->nama_bahan . '" sudah ada!'
+            ]);
+        }
+
+        $request->validate([
+            'nama_bahan' => 'required|string|max:255',
+        ]);
+
+        Bahan::create(['nama_bahan' => $request->nama_bahan]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Bahan berhasil disimpan!'
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -138,8 +198,10 @@ class barangcontroller extends Controller
 
         // PENTING: Nama variabel harus $products agar sesuai dengan View shop.blade.php kamu
         $products = $query->paginate(20);
+        $kategoriList = Kategori::all();
 
-        return view('customer.shop', compact('products'));
+        return view('customer.shop', compact('products', 'kategoriList'));
+
     }
 
     public function home()
@@ -200,7 +262,47 @@ class barangcontroller extends Controller
         };
 
         $products = $query->paginate(20);
+        $kategoriList = Kategori::all();
 
-        return view('customer.shop_cat', compact('products', 'slug'));
+        return view('customer.shop_cat', compact('products', 'slug', 'kategoriList'));
     }
+
+    public function custom()
+    {
+        return view('customer.custom');
+    }
+
+
+    public function storeCustom(Request $request)
+    {
+        $request->validate([
+            'jenis_furniture' => 'required|string|max:255',
+            'jenis_kayu'      => 'required|string|max:255',
+            'ukuran'          => 'required|string|max:255',
+            'catatan'         => 'nullable|string',
+            'gambar'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $gambarPath = null;
+        if ($request->hasFile('gambar')) {
+            $file     = $request->file('gambar');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('custom_orders', $namaFile, 'public');
+            $gambarPath = 'custom_orders/' . $namaFile;
+        }
+
+        CustomOrder::create([
+            'user_id'         => auth()->id(),
+            'jenis_furniture' => $request->jenis_furniture,
+            'jenis_kayu'      => $request->jenis_kayu,
+            'ukuran'          => $request->ukuran,
+            'catatan'         => $request->catatan,
+            'gambar'          => $gambarPath,
+        ]);
+
+        return redirect()->route('customer.custom')
+            ->with('success', 'Pesanan custom berhasil dikirim! Tim kami akan segera menghubungi Anda.');
+    }
+
+    
 }

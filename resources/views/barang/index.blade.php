@@ -3,11 +3,30 @@
 
 @section('content')
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold" style="color: #1c1b1b;">Tabel Barang</h2>
-        <button class="btn shadow-sm text-white" data-bs-toggle="modal" data-bs-target="#modalTambahBarang" style="background-color: #3d5a4a;">
-            <i class="bi bi-plus-lg"></i> Tambah Data
-        </button>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+
+        <h2 class="fw-bold mb-0" style="color: #1c1b1b;">
+            Tabel Barang
+        </h2>
+
+        <!-- kumpulan tombol -->
+        <div class="d-flex gap-2">
+
+            <button class="btn shadow-sm text-white"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalTambahBarang"
+                    style="background-color: #3d5a4a;">
+                <i class="bi bi-plus-lg"></i> Tambah Data
+            </button>
+
+            <button class="btn shadow-sm text-white"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalTambahkategori"
+                    style="background-color: #3d5a4a;">
+                <i class="bi bi-plus-lg"></i> Tambah Data kategori & bahan
+            </button>
+
+        </div>
     </div>
 
     <div class="card shadow-sm border-0" style="border-radius: 12px;">
@@ -90,6 +109,7 @@
 
 <!-- Kirim data bahan ke modal create -->
 @include('barang.create', ['kategori' => $kategori, 'bahan' => $bahan])
+@include('barang.tambah_cat')
 
 @stop
 

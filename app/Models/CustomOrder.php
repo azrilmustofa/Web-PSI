@@ -11,6 +11,7 @@ class CustomOrder extends Model
         'user_id',
         'jenis_furniture',
         'jenis_kayu',
+        'gambar',
         'ukuran',
         'catatan',
         'status'

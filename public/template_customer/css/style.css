@@ -1094,3 +1094,361 @@ input:-webkit-autofill:active  {
         background: #fafafa;
         cursor: default;
     }
+
+
+    /* ===== CUSTOM SECTION — selaras dengan tema utama UntreeStore ===== */
+
+    /* Reset variabel: pakai palet hijau dari tema utama */
+    :root {
+        --primary:      #3b5d50;   /* hijau utama */
+        --primary-dark: #314d43;   /* hover hijau */
+        --primary-light:#dce5e4;   /* hijau muda / border */
+        --accent:       #f9bf29;   /* kuning aksen */
+        --dark:         #2f2f2f;   /* teks gelap */
+        --muted:        #6a6a6a;   /* teks abu */
+        --bg:           #eff2f1;   /* background halaman */
+        --surface:      #ffffff;   /* kartu/form */
+        --border:       #dce5e4;   /* border ringan */
+    }
+
+    /* ── Wrapper & container ─────────────────────────────────────── */
+    .custom-wrapper {
+        min-height: 100vh;
+        background: var(--bg);
+        padding: 3rem 1rem;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        color: var(--muted);
+    }
+
+    .custom-container {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    /* ── Header form ─────────────────────────────────────────────── */
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-header .eyebrow {
+        display: inline-block;
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--primary);
+        border-top: 2px solid var(--accent);
+        border-bottom: 2px solid var(--accent);
+        padding: 6px 20px;
+        margin-bottom: 1rem;
+    }
+
+    .form-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0 0 0.5rem;
+        line-height: 1.25;
+    }
+
+    .form-header p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* ── Kartu form ──────────────────────────────────────────────── */
+    .form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(59, 93, 80, 0.08);
+    }
+
+    /* ── Judul section di dalam form ─────────────────────────────── */
+    .form-section-title {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin: 0 0 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-light);
+    }
+
+    /* ── Grid & group ────────────────────────────────────────────── */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* ── Label ───────────────────────────────────────────────────── */
+    .form-group label {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--dark);
+    }
+
+    .form-group label .required {
+        color: #c62828;
+        margin-left: 3px;
+    }
+
+    /* ── Input, select, textarea ─────────────────────────────────── */
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        height: 50px;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--dark);
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+        box-sizing: border-box;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 1px 4px rgba(59, 93, 80, 0.2);
+        background: #fff;
+    }
+
+    .form-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b5d50' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+        cursor: pointer;
+    }
+
+    .form-group textarea {
+        height: auto !important;
+        min-height: 110px;
+        line-height: 1.6;
+        resize: vertical;
+    }
+
+    /* ── Upload zone ─────────────────────────────────────────────── */
+    .upload-zone {
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        position: relative;
+    }
+
+    .upload-zone:hover {
+        border-color: var(--primary);
+        background: #fff;
+    }
+
+    .upload-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
+
+    .upload-icon {
+        font-size: 2rem;
+        color: var(--primary-light);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .upload-zone .upload-label {
+        font-size: 0.875rem;
+        color: var(--muted);
+        display: block;
+    }
+
+    .upload-zone .upload-hint {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        color: var(--primary);
+        letter-spacing: 0.05em;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .upload-preview {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-top: 8px;
+    }
+
+    .upload-preview img {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .upload-preview .preview-name {
+        font-size: 0.875rem;
+        color: var(--dark);
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ukuran-hint {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.03em;
+        margin-top: 3px;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────────── */
+    .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 2rem 0;
+    }
+
+    /* ── Footer form ─────────────────────────────────────────────── */
+    .form-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .footer-note {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+        line-height: 1.6;
+    }
+
+    /* ── Tombol submit ───────────────────────────────────────────── */
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--primary);
+        color: #ffffff;
+        border: none;
+        padding: 12px 30px;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-dark);
+        color: #ffffff;
+    }
+
+    .btn-submit:active {
+        transform: scale(0.97);
+    }
+
+    .btn-submit svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+    }
+
+    /* ── Alert ───────────────────────────────────────────────────── */
+    .alert-error {
+        background: #fdecea;
+        border: 1px solid #f5c6c6;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-error ul {
+        margin: 0;
+        padding-left: 1.2rem;
+        font-size: 0.875rem;
+        color: #c62828;
+    }
+
+    .alert-success {
+        background: #e6f4ea;
+        border: 1px solid #b7dfcc;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        color: #2e7d32;
+    }
+
+    /* ── Validasi ────────────────────────────────────────────────── */
+    .invalid-feedback {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        color: #c62828;
+        letter-spacing: 0.03em;
+        margin-top: 3px;
+    }
+
+    .is-invalid {
+        border-color: #e74c3c !important;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+        .form-grid          { grid-template-columns: 1fr; }
+        .form-card          { padding: 1.5rem; }
+        .form-header h1     { font-size: 1.5rem; }
+        .form-footer        { flex-direction: column-reverse; align-items: stretch; }
+        .btn-submit         { justify-content: center; }
+    }

@@ -30,31 +30,24 @@
 <div class="untree_co-section product-section before-footer-section">
     <div class="container">
         <div class="row g-4 justify-content-center">
-            @php
-            $categories = [
-                ['nama' => 'Meja',             'gambar' => 'template_customer/images/asset_cat/img_meja.jpg',    'slug' => 'meja'],
-                ['nama' => 'Kursi',            'gambar' => 'template_customer/images/asset_cat/img_kursi.jpg',   'slug' => 'kursi'],
-                ['nama' => 'Lemari',           'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',  'slug' => 'lemari'],
-                ['nama' => 'Tempat Tidur',     'gambar' => 'template_customer/images/asset_cat/img_tmpttdr.jpg', 'slug' => 'tempat-tidur'],
-                ['nama' => 'Sofa',             'gambar' => 'template_customer/images/asset_cat/img_sofa.jpg',    'slug' => 'sofa'],
-                ['nama' => 'Rak',              'gambar' => 'template_customer/images/asset_cat/img_rak.jpg',     'slug' => 'rak'],
-                ['nama' => 'Kitchen Set',      'gambar' => 'template_customer/images/asset_cat/img_dapur.jpg',   'slug' => 'kitchen-set'],
-                ['nama' => 'Furniture Custom', 'gambar' => 'template_customer/images/asset_cat/img_lemari.jpg',  'slug' => 'furniture-custom'],
-            ];
-            @endphp
-
-            @foreach ($categories as $cat)
+            @foreach ($kategoriList as $cat)
             <div class="col-6 col-md-4 col-lg-3">
-                <a class="category-card" href="{{ route('customer.kategori', $cat['slug']) }}">
+                <a class="category-card" href="{{ route('customer.kategori', Str::slug($cat->nama_kategori)) }}">
                     <div class="category-img-wrapper">
-                        <img src="{{ asset($cat['gambar']) }}" class="category-img" alt="{{ $cat['nama'] }}">
-                        <div class="category-label">{{ $cat['nama'] }}</div>
+                        @php
+                            // Jika ada gambar di DB pakai itu, jika tidak pakai default
+                            $gambar = $cat->gambar
+                                ? 'storage/' . $cat->gambar
+                                : 'template_customer/images/asset_cat/img_default.jpg';
+                        @endphp
+                        <img src="{{ asset($gambar) }}" class="category-img" alt="{{ $cat->nama_kategori }}">
+                        <div class="category-label">{{ $cat->nama_kategori }}</div>
                     </div>
                 </a>
             </div>
             @endforeach
         </div>
-    </div>
+    </div>  
 </div>
 @endsection
 

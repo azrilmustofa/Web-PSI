@@ -18,6 +18,7 @@ return new class extends Migration
 
     $table->string('jenis_furniture');
     $table->string('jenis_kayu');
+    $table->string('gambar', 255)->nullable();
     $table->string('ukuran');
 
     $table->text('catatan')->nullable();
