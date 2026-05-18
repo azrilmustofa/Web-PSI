@@ -11,7 +11,7 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        return view('payment');
+        return view('payment.payment');
     }
 
     public function token()

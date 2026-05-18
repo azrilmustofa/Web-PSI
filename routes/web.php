@@ -13,9 +13,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomOrderController;
 use App\Http\Controllers\PaymentController;
 
-Route::get('/payment', [PaymentController::class, 'index']);
-
-Route::get('/payment-token', [PaymentController::class, 'token']);
 
 // Ganti Route::post menjadi Route::put
 Route::put('/reset-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
@@ -71,6 +68,12 @@ Route::middleware(['auth','customer'])->group(function () {
     ->name('checkout.hapus');
     Route::post('/checkout/tambah/{id}', [pesananController::class, 'tambah'])->name('checkout.tambah');
     Route::post('/checkout/kurang/{id}', [pesananController::class, 'kurang'])->name('checkout.kurang');
+
+    // midtrans
+    Route::get('/payment-success', function () {return "Pembayaran Berhasil";});   
+    Route::get('/payment', [PaymentController::class, 'index']);
+
+    Route::get('/payment-token', [PaymentController::class, 'token']);
 
 
 

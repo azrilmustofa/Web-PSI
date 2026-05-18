@@ -6,17 +6,17 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Run the database seeds.
      */
     public function run(): void
     {
 
         // ADMIN
         User::create([
-            'name' => 'Admin',
+            'name' => 'admin',
             'role' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('12345678'),
@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
 
         // KASIR
         User::create([
-            'name' => 'Kasir',
+            'name' => 'kasir',
             'role' => 'kasir',
             'email' => 'kasir@gmail.com',
             'password' => Hash::make('12345678'),
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
         // CUSTOMER
         User::create([
-            'name' => 'Customer',
+            'name' => 'customer',
             'role' => 'customer',
             'email' => 'customer@gmail.com',
             'password' => Hash::make('12345678'),
