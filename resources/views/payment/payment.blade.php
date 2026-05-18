@@ -1,126 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Midtrans</title>
+@extends('layouts.master')
 
-    <script
-        type="text/javascript"
-        src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ config('midtrans.clientKey') }}">
-    </script>
+@section('content')
 
-    <style>
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<div class="container py-5">
 
-        .card{
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 400px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+    <div class="row justify-content-center">
 
-        button{
-            background: #007bff;
-            color: white;
-            border: none;l
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+        <div class="col-lg-6">
 
-        button:hover{
-            background: #0056b3;
-        }
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-        h1{
-            margin-bottom: 20px;
-        }
+                {{-- HEADER --}}
+                <div class="p-4 text-white"
+                     style="background-color: #3b5d50;">
 
-        p{
-            color: #666;
-        }
-    </style>
-</head>
-<body>
+                    <h3 class="fw-bold mb-1">
 
-<div class="card">
+                        Pembayaran Custom Order
 
-    <h1>Pembayaran Midtrans</h1>
+                    </h3>
 
-    <p>Total pembayaran:</p>
+                    <p class="mb-0 opacity-75">
 
-    <h2>Rp 10.000</h2>
+                        Selesaikan pembayaran furniture custom Anda
 
-    <button id="pay-button">
-        Bayar Sekarang
-    </button>
+                    </p>
+
+                </div>
+
+                {{-- BODY --}}
+                <div class="card-body p-5">
+
+                    {{-- PRODUK --}}
+                    <div class="text-center mb-4">
+
+                        <div class="mb-3">
+
+                            @if($order->gambar)
+
+                                <img src="{{ asset('storage/' . $order->gambar) }}"
+                                     class="img-fluid rounded-4 shadow-sm"
+                                     style="height:220px; object-fit:cover;">
+
+                            @else
+
+                                <img src="https://cdn-icons-png.flaticon.com/512/679/679720.png"
+                                     width="120">
+
+                            @endif
+
+                        </div>
+
+                        <h4 class="fw-bold">
+
+                            {{ $order->jenis_furniture }}
+
+                        </h4>
+
+                        <p class="text-muted mb-1">
+
+                            Jenis Kayu:
+                            {{ $order->jenis_kayu }}
+
+                        </p>
+
+                        <p class="text-muted">
+
+                            Ukuran:
+                            {{ $order->ukuran }}
+
+                        </p>
+
+                    </div>
+
+                    {{-- TOTAL --}}
+                    <div class="bg-light rounded-4 p-4 mb-4">
+
+                        <div class="d-flex justify-content-between">
+
+                            <span class="fw-semibold">
+
+                                Estimasi Harga
+
+                            </span>
+
+                            <span class="fw-bold text-success fs-5">
+
+                                Rp {{ number_format($order->estimasi_harga,0,',','.') }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {{-- BUTTON --}}
+                    <button id="pay-button"
+                            class="btn w-100 py-3 rounded-pill fw-bold text-white"
+                            style="background-color:#3b5d50;">
+
+                        Bayar Sekarang
+
+                    </button>
+
+                    <div class="text-center mt-3">
+
+                        <small class="text-muted">
+
+                            Mendukung QRIS, Bank Transfer,
+                            Gopay, ShopeePay, Dana, dll
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
+
+{{-- MIDTRANS SNAP --}}
+<script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}">
+</script>
 
 <script>
 
 document.getElementById('pay-button').onclick = function () {
 
-    fetch('/payment-token')
-    .then(response => response.json())
-    .then(token => {
+    snap.pay('{{ $snapToken }}', {
 
-        console.log(token);
+        onSuccess: function(result) {
 
-        snap.pay(token, {
+            alert("Pembayaran berhasil!");
 
-            onSuccess: function(result){
+            window.location.href = "/profile";
 
-                alert("Pembayaran berhasil");
+        },
 
-                console.log(result);
+        onPending: function(result) {
 
-                window.location.href = "/payment-success";
+            alert("Menunggu pembayaran");
 
-            },
+        },
 
-            onPending: function(result){
+        onError: function(result) {
 
-                alert("Menunggu pembayaran");
+            alert("Pembayaran gagal");
 
-                console.log(result);
+        },
 
-            },
+        onClose: function() {
 
-            onError: function(result){
+            alert('Popup pembayaran ditutup');
 
-                alert("Pembayaran gagal");
-
-                console.log(result);
-
-            },
-
-            onClose: function(){
-
-                alert('Popup pembayaran ditutup');
-
-            }
-
-        });
-
-    })
-    .catch(error => {
-
-        console.log(error);
-
-        alert('Terjadi error');
+        }
 
     });
 
@@ -128,5 +167,4 @@ document.getElementById('pay-button').onclick = function () {
 
 </script>
 
-</body>
-</html>
+@endsection

@@ -14,6 +14,7 @@ use App\Http\Controllers\CustomOrderController;
 use App\Http\Controllers\PaymentController;
 
 
+
 // Ganti Route::post menjadi Route::put
 Route::put('/reset-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 Route::middleware('auth')->get('/redirect-role', function () {
@@ -74,7 +75,14 @@ Route::middleware(['auth','customer'])->group(function () {
     Route::get('/payment', [PaymentController::class, 'index']);
 
     Route::get('/payment-token', [PaymentController::class, 'token']);
+    Route::get(
+    '/midtrans/payment/{id}',
+    [PaymentController::class, 'payment']
+    )->name('midtrans.payment');
 
+    Route::get('/payment/{id}', [PaymentController::class, 'show'])
+    ->name('payment.show');
+    
 
 
 
