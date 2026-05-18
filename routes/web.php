@@ -11,10 +11,16 @@ use App\Http\Middleware\admin;
 use App\Http\Middleware\customer;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomOrderController;
+use App\Http\Controllers\PaymentController;
+
+Route::get('/payment', [PaymentController::class, 'index']);
+
+Route::get('/payment-token', [PaymentController::class, 'token']);
+
 // Ganti Route::post menjadi Route::put
 Route::put('/reset-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 Route::middleware('auth')->get('/redirect-role', function () {
-
+    
     if(auth()->user()->role == 'admin'){
         return redirect()->route('barang.index');
     }
@@ -47,7 +53,6 @@ Route::get('/custom', [barangcontroller::class, 'custom'])->name('customer.custo
 Route::get('/kategori/{slug}', [barangcontroller::class, 'kategori'])->name('customer.kategori');
 Route::get('/contact', [barangcontroller::class, 'contact'])->name('customer.contact'); 
 Route::middleware(['auth','customer'])->group(function () {
-     
     Route::post('/custom-orders', [barangcontroller::class, 'storeCustom'])
         ->name('custom-orders.store');
     Route::get('/checkout', [pesanancontroller::class, 'checkout'])
