@@ -18,6 +18,25 @@ class CustomOrderController extends Controller
     // CUSTOMER REQUEST CUSTOM
     public function store(Request $request)
     {
+        $request->validate([
+
+            'jenis_furniture' => 'required',
+            'jenis_kayu' => 'required',
+            'ukuran' => 'required',
+            'catatan' => 'nullable',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+
+        ]);
+
+        // SIMPAN GAMBAR
+        $gambarPath = null;
+
+        if ($request->hasFile('gambar')) {
+
+            $gambarPath = $request->file('gambar')
+                ->store('custom_orders', 'public');
+        }
+
         CustomOrder::create([
 
             'user_id' => auth()->id(),
@@ -26,11 +45,15 @@ class CustomOrderController extends Controller
 
             'jenis_kayu' => $request->jenis_kayu,
 
+            'gambar' => $gambarPath,
+
             'ukuran' => $request->ukuran,
 
             'catatan' => $request->catatan,
 
-            'status' => 'Pending',
+            'estimasi_harga' => null,
+
+            'status' => 'pending',
 
         ]);
 
@@ -40,10 +63,19 @@ class CustomOrderController extends Controller
         );
     }
 
-    // UPDATE STATUS KASIR
+    // UPDATE STATUS + HARGA KASIR
     public function status($id, Request $request)
     {
+        $request->validate([
+
+            'estimasi_harga' => 'required|numeric',
+            'status' => 'required',
+
+        ]);
+
         $order = CustomOrder::findOrFail($id);
+
+        $order->estimasi_harga = $request->estimasi_harga;
 
         $order->status = $request->status;
 
@@ -51,8 +83,7 @@ class CustomOrderController extends Controller
 
         return back()->with(
             'success',
-            'Status berhasil diupdate'
+            'Harga dan status berhasil diupdate'
         );
     }
-    
 }

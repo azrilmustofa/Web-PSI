@@ -205,23 +205,42 @@ class barangcontroller extends Controller
     }
 
     public function home()
-    {
-        $bestSeller = barang::with(['kategori', 'bahan'])
-            ->select('barang.*', DB::raw('SUM(detail_pesanan.jumlah) as total_terjual'))
-            ->join('detail_pesanan', 'barang.id', '=', 'detail_pesanan.barang_id')
-            ->join('pesanan', 'detail_pesanan.pesanan_id', '=', 'pesanan.id')
-            ->where('pesanan.status', 1)
-            ->groupBy(
-                'barang.id', 'barang.nama_barang', 'barang.kategori_id', 'barang.bahan_id', 
-                'barang.harga', 'barang.ukuran', 'barang.stok', 'barang.gambar', 
-                'barang.deskripsi', 'barang.created_at', 'barang.updated_at'
-            )
-            ->orderByDesc('total_terjual')
-            ->take(3)
-            ->get();
+{
+    $bestSeller = barang::with(['kategori', 'bahan'])
+        ->select(
+            'barang.id',
+            'barang.nama_barang',
+            'barang.kategori_id',
+            'barang.bahan_id',
+            'barang.harga',
+            'barang.ukuran',
+            'barang.stok',
+            'barang.gambar',
+            'barang.created_at',
+            'barang.updated_at',
+            DB::raw('SUM(detail_pesanan.jumlah) as total_terjual')
+        )
+        ->join('detail_pesanan', 'barang.id', '=', 'detail_pesanan.barang_id')
+        ->join('pesanan', 'detail_pesanan.pesanan_id', '=', 'pesanan.id')
+        ->where('pesanan.status', 1)
+        ->groupBy(
+            'barang.id',
+            'barang.nama_barang',
+            'barang.kategori_id',
+            'barang.bahan_id',
+            'barang.harga',
+            'barang.ukuran',
+            'barang.stok',
+            'barang.gambar',
+            'barang.created_at',
+            'barang.updated_at'
+        )
+        ->orderByDesc('total_terjual')
+        ->take(3)
+        ->get();
 
-        return view('customer.index', compact('bestSeller'));
-    }
+    return view('customer.index', compact('bestSeller'));
+}
 
     public function about()
     {

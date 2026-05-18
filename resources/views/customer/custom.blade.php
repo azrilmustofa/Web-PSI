@@ -1,184 +1,310 @@
 @extends('layouts.master')
-@section('title', 'Custom Furniture')
-
-@section('styles')
-<link rel="stylesheet" href="{{ asset('template_customer/css/style.css') }}">
-@endsection
 
 @section('content')
 
-<div class="custom-wrapper">
-    <div class="custom-container">
+<div class="container py-5">
 
-        {{-- Header --}}
-        <div class="form-header">
-            <span class="eyebrow">Pesan Sekarang</span>
-            <h1>Custom Furniture</h1>
-            <p>Ceritakan furnitur impian Anda — kami wujudkan dengan tangan.</p>
+    {{-- ALERT --}}
+    @if(session('success'))
+
+        <div class="alert alert-success shadow-sm border-0 rounded-4">
+
+            {{ session('success') }}
+
         </div>
 
-        {{-- Alerts --}}
-        @if ($errors->any())
-            <div class="alert-error">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    @endif
+
+    <div class="row">
+
+        {{-- FORM CUSTOM --}}
+        <div class="col-lg-5 mb-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body p-4">
+
+                    <h3 class="fw-bold mb-2">
+                        Custom Furniture
+                    </h3>
+
+                    <p class="text-muted mb-4">
+                        Request furniture sesuai kebutuhan Anda
+                    </p>
+
+                    <form action="{{ route('custom-orders.store') }}"
+                          method="POST"
+                          enctype="multipart/form-data">
+
+                        @csrf
+
+                        {{-- JENIS FURNITURE --}}
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Jenis Furniture
+                            </label>
+
+                            <input type="text"
+                                   name="jenis_furniture"
+                                   class="form-control rounded-3"
+                                   placeholder="Contoh: Meja Belajar"
+                                   required>
+
+                        </div>
+
+                        {{-- JENIS KAYU --}}
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Jenis Kayu
+                            </label>
+
+                            <input type="text"
+                                   name="jenis_kayu"
+                                   class="form-control rounded-3"
+                                   placeholder="Contoh: Jati"
+                                   required>
+
+                        </div>
+
+                        {{-- UKURAN --}}
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Ukuran
+                            </label>
+
+                            <input type="text"
+                                   name="ukuran"
+                                   class="form-control rounded-3"
+                                   placeholder="Contoh: 120x60x75 cm"
+                                   required>
+
+                        </div>
+
+                        {{-- CATATAN --}}
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Catatan Tambahan
+                            </label>
+
+                            <textarea name="catatan"
+                                      rows="4"
+                                      class="form-control rounded-3"
+                                      placeholder="Tambahkan detail custom furniture"></textarea>
+
+                        </div>
+
+                        {{-- GAMBAR --}}
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Upload Referensi Gambar
+                            </label>
+
+                            <input type="file"
+                                   name="gambar"
+                                   class="form-control rounded-3">
+
+                        </div>
+
+                        {{-- BUTTON --}}
+                        <button type="submit"
+                                class="btn btn-success w-100 rounded-3 py-2 fw-semibold">
+
+                            Kirim Custom Order
+
+                        </button>
+
+                    </form>
+
+                </div>
+
             </div>
-        @endif
 
-        @if (session('success'))
-            <div class="alert-success">{{ session('success') }}</div>
-        @endif
+        </div>
 
-        {{-- Form Card --}}
-        <div class="form-card">
+        {{-- RIWAYAT CUSTOM --}}
+        <div class="col-lg-7">
 
-            <form action="{{ route('custom-orders.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+            <div class="card border-0 shadow-sm rounded-4">
 
-                {{-- Section: Spesifikasi Furniture --}}
-                <p class="form-section-title">Spesifikasi Furniture</p>
+                <div class="card-body p-4">
 
-                <div class="form-grid">
+                    <h3 class="fw-bold mb-2">
+                        Riwayat Custom Order
+                    </h3>
 
-                {{-- Jenis Furniture --}}
-                <div class="form-group">
-                    <label for="jenis_furniture">
-                        Jenis Furniture <span class="required">*</span>
-                    </label>
-                    <input type="text" name="jenis_furniture" id="jenis_furniture"
-                        value="{{ old('jenis_furniture') }}"
-                        placeholder="Contoh: Meja, Kursi, Lemari, dll."
-                        class="{{ $errors->has('jenis_furniture') ? 'is-invalid' : '' }}"
-                        required>
-                    @error('jenis_furniture')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
+                    <p class="text-muted mb-4">
+                        Pantau status dan harga custom furniture Anda
+                    </p>
 
-                {{-- Jenis Kayu --}}
-                <div class="form-group">
-                    <label for="jenis_kayu">
-                        Jenis Kayu <span class="required">*</span>
-                    </label>
-                    <input type="text" name="jenis_kayu" id="jenis_kayu"
-                        value="{{ old('jenis_kayu') }}"
-                        placeholder="Contoh: Jati, Mahoni, Pinus."
-                        class="{{ $errors->has('jenis_kayu') ? 'is-invalid' : '' }}"
-                        required>
-                    @error('jenis_kayu')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
+                    <div class="table-responsive">
 
-                    {{-- Ukuran --}}
-                    <div class="form-group full-width">
-                        <label for="ukuran">
-                            Ukuran <span class="required">*</span>
-                        </label>
-                        <input type="text" name="ukuran" id="ukuran"
-                            value="{{ old('ukuran') }}"
-                            placeholder="Contoh: 120×60×75 cm (P×L×T)"
-                            class="{{ $errors->has('ukuran') ? 'is-invalid' : '' }}"
-                            required>
-                        <span class="ukuran-hint">Gunakan format: Panjang × Lebar × Tinggi dalam cm</span>
-                        @error('ukuran')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
+                        <table class="table align-middle">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>No</th>
+                                    <th>Furniture</th>
+                                    <th>Gambar</th>
+                                    <th>Harga</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @forelse($custom_orders as $item)
+
+                                <tr>
+
+                                    <td>
+                                        {{ $loop->iteration }}
+                                    </td>
+
+                                    <td>
+
+                                        <div class="fw-semibold">
+                                            {{ $item->jenis_furniture }}
+                                        </div>
+
+                                        <small class="text-muted">
+                                            {{ $item->jenis_kayu }}
+                                        </small>
+
+                                    </td>
+
+                                    {{-- GAMBAR --}}
+                                    <td>
+
+                                        @if($item->gambar)
+
+                                            <img src="{{ asset('storage/' . $item->gambar) }}"
+                                                 width="80"
+                                                 class="rounded shadow-sm">
+
+                                        @else
+
+                                            <span class="text-muted">
+                                                Tidak ada
+                                            </span>
+
+                                        @endif
+
+                                    </td>
+
+                                    {{-- HARGA --}}
+                                    <td>
+
+                                        @if($item->estimasi_harga)
+
+                                            <span class="fw-bold text-success">
+
+                                                Rp {{ number_format($item->estimasi_harga,0,',','.') }}
+
+                                            </span>
+
+                                        @else
+
+                                            <span class="text-muted">
+
+                                                Menunggu Harga
+
+                                            </span>
+
+                                        @endif
+
+                                    </td>
+
+                                    {{-- STATUS --}}
+                                    <td>
+
+                                        @if($item->status == 'pending')
+
+                                            <span class="badge bg-warning text-dark">
+                                                Pending
+                                            </span>
+
+                                        @elseif($item->status == 'diproses')
+
+                                            <span class="badge bg-info">
+                                                Diproses
+                                            </span>
+
+                                        @elseif($item->status == 'selesai')
+
+                                            <span class="badge bg-success">
+                                                Selesai
+                                            </span>
+
+                                        @endif
+
+                                    </td>
+
+                                    {{-- MIDTRANS --}}
+                                    <td>
+
+                                        @if($item->estimasi_harga && $item->status != 'selesai')
+
+                                            <a href="{{ route('custom.payment', $item->id) }}"
+                                               class="btn btn-success btn-sm rounded-pill">
+
+                                                Bayar
+
+                                            </a>
+
+                                        @else
+
+                                            <button class="btn btn-secondary btn-sm rounded-pill"
+                                                    disabled>
+
+                                                Menunggu
+
+                                            </button>
+
+                                        @endif
+
+                                    </td>
+
+                                </tr>
+
+                                @empty
+
+                                <tr>
+
+                                    <td colspan="6"
+                                        class="text-center text-muted py-4">
+
+                                        Belum ada custom order
+
+                                    </td>
+
+                                </tr>
+
+                                @endforelse
+
+                            </tbody>
+
+                        </table>
+
                     </div>
 
                 </div>
 
-                <div class="divider"></div>
+            </div>
 
-                {{-- Section: Referensi Desain --}}
-                <p class="form-section-title">Referensi Desain</p>
+        </div>
 
-                {{-- Gambar --}}
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label for="gambar">Gambar Referensi</label>
-                    <div class="upload-zone" id="uploadZone">
-                        <input type="file" name="gambar" id="gambar"
-                            accept="image/jpeg,image/png,image/webp,image/jpg"
-                            onchange="handleFileChange(this)">
-                        <span class="upload-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
-                        </span>
-                        <span class="upload-label">Klik untuk unggah gambar referensi</span>
-                        <span class="upload-hint">JPG, PNG, WEBP · Maks 2MB</span>
-                    </div>
-                    <div class="upload-preview" id="uploadPreview">
-                        <img id="previewImg" src="" alt="Preview">
-                        <span class="preview-name" id="previewName"></span>
-                    </div>
-                    @error('gambar')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
+    </div>
 
-                {{-- Catatan --}}
-                <div class="form-group">
-                    <label for="catatan">Catatan Tambahan</label>
-                    <textarea name="catatan" id="catatan"
-                        placeholder="Tuliskan detail tambahan: warna finishing, motif ukiran, material khusus, atau kebutuhan lain...">{{ old('catatan') }}</textarea>
-                    @error('catatan')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="divider"></div>
-
-                {{-- Footer --}}
-                <div class="form-footer">
-                    <span class="footer-note">
-                        Tim kami akan menghubungi Anda<br>untuk konfirmasi & estimasi harga.
-                    </span>
-                    <button type="submit" class="btn-submit">
-                        <svg viewBox="0 0 24 24" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                        Kirim Pesanan
-                    </button>
-                </div>
-
-            </form>
-
-        </div>{{-- end .form-card --}}
-
-    </div>{{-- end .custom-container --}}
-</div>{{-- end .custom-wrapper --}}
-
-<script>
-    function handleFileChange(input) {
-        const preview = document.getElementById('uploadPreview');
-        const previewImg = document.getElementById('previewImg');
-        const previewName = document.getElementById('previewName');
-        const zone = document.getElementById('uploadZone');
-
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                previewName.textContent = file.name;
-                preview.style.display = 'flex';
-                zone.style.borderColor = 'var(--wood-400)';
-            };
-
-            reader.readAsDataURL(file);
-        } else {
-            preview.style.display = 'none';
-            zone.style.borderColor = 'var(--wood-200)';
-        }
-    }
-</script>
+</div>
 
 @endsection
