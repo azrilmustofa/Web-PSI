@@ -207,37 +207,31 @@ class barangcontroller extends Controller
     public function home()
 {
     $bestSeller = barang::with(['kategori', 'bahan'])
-        ->select(
-            'barang.id',
-            'barang.nama_barang',
-            'barang.kategori_id',
-            'barang.bahan_id',
-            'barang.harga',
-            'barang.ukuran',
-            'barang.stok',
-            'barang.gambar',
-            'barang.created_at',
-            'barang.updated_at',
-            DB::raw('SUM(detail_pesanan.jumlah) as total_terjual')
-        )
+        ->select('barang.*', DB::raw('SUM(detail_pesanan.jumlah) as total_terjual'))
         ->join('detail_pesanan', 'barang.id', '=', 'detail_pesanan.barang_id')
         ->join('pesanan', 'detail_pesanan.pesanan_id', '=', 'pesanan.id')
-        ->where('pesanan.status', 1)
+        ->whereIn('pesanan.status', [1, 2, 3, 4])
         ->groupBy(
-            'barang.id',
-            'barang.nama_barang',
-            'barang.kategori_id',
-            'barang.bahan_id',
-            'barang.harga',
-            'barang.ukuran',
-            'barang.stok',
-            'barang.gambar',
-            'barang.created_at',
-            'barang.updated_at'
+            'barang.id', 'barang.nama_barang', 'barang.kategori_id', 'barang.bahan_id', 
+            'barang.harga', 'barang.ukuran', 'barang.stok', 'barang.gambar', 
+            'barang.deskripsi', 'barang.created_at', 'barang.updated_at'
         )
         ->orderByDesc('total_terjual')
         ->take(3)
         ->get();
+
+
+    if ($bestSeller->isEmpty()) {
+        $bestSeller = barang::with(['kategori', 'bahan'])
+            ->where('stok', '>', 0)
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function($item) {
+                $item->total_terjual = 0;
+                return $item;
+            });
+    }
 
     return view('customer.index', compact('bestSeller'));
 }
