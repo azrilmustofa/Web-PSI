@@ -19,7 +19,6 @@
             </p>
         </div>
 
-
     </div>
 
     {{-- ALERT --}}
@@ -52,6 +51,8 @@
                             <th>Kayu</th>
                             <th>Ukuran</th>
                             <th>Catatan</th>
+                            <th>Gambar</th>
+                            <th>Harga</th>
                             <th>Status</th>
 
                         </tr>
@@ -84,39 +85,87 @@
                                 {{ $item->ukuran }}
                             </td>
 
-                            <td>
+                            <td style="max-width: 200px">
                                 {{ $item->catatan }}
                             </td>
 
+                            {{-- GAMBAR --}}
                             <td>
 
+                                @if($item->gambar)
+
+                                    <img src="{{ asset('storage/' . $item->gambar) }}"
+                                         width="90"
+                                         class="rounded shadow-sm">
+
+                                @else
+
+                                    <span class="text-muted">
+                                        Tidak ada
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            {{-- FORM HARGA + STATUS --}}
+                            <td colspan="2">
+
                                 <form action="{{ route('custom.status', $item->id) }}"
-                                      method="POST">
+                                      method="POST"
+                                      class="d-flex gap-2 align-items-center">
 
                                     @csrf
 
-                                    <select name="status"
-                                            onchange="this.form.submit()"
-                                            class="form-select rounded-pill">
+                                    {{-- INPUT HARGA --}}
+                                    <input type="number"
+                                           name="estimasi_harga"
+                                           class="form-control"
+                                           placeholder="Input harga"
+                                           value="{{ $item->estimasi_harga }}"
+                                           required>
 
-                                        <option value="Pending"
-                                            {{ $item->status == 'Pending' ? 'selected' : '' }}>
+                                    {{-- STATUS --}}
+                                    <select name="status"
+                                            class="form-select">
+
+                                        <option value="pending"
+                                            {{ $item->status == 'pending' ? 'selected' : '' }}>
                                             Pending
                                         </option>
 
-                                        <option value="Diproses"
-                                            {{ $item->status == 'Diproses' ? 'selected' : '' }}>
+                                        <option value="diproses"
+                                            {{ $item->status == 'diproses' ? 'selected' : '' }}>
                                             Diproses
                                         </option>
 
-                                        <option value="Selesai"
-                                            {{ $item->status == 'Selesai' ? 'selected' : '' }}>
+                                        <option value="selesai"
+                                            {{ $item->status == 'selesai' ? 'selected' : '' }}>
                                             Selesai
                                         </option>
 
                                     </select>
 
+                                    {{-- BUTTON --}}
+                                    <button type="submit"
+                                            class="btn btn-success">
+
+                                        Simpan
+
+                                    </button>
+
                                 </form>
+
+                                {{-- TAMPIL HARGA --}}
+                                @if($item->estimasi_harga)
+
+                                    <small class="text-success fw-bold d-block mt-2">
+
+                                        Rp {{ number_format($item->estimasi_harga,0,',','.') }}
+
+                                    </small>
+
+                                @endif
 
                             </td>
 
@@ -126,7 +175,7 @@
 
                         <tr>
 
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="9" class="text-center text-muted py-4">
 
                                 Belum ada custom order
 
