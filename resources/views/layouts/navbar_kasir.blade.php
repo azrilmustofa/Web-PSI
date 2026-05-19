@@ -29,14 +29,16 @@
 
                 {{-- DASHBOARD --}}
                 <li class="nav-item">
-
-                    <a class="nav-link px-3 {{ Request::is('dashboard-kasir*') ? 'active fw-bold' : '' }}"
+                    <a class="nav-link px-3 {{ Request::is('custom-order*') ? 'active fw-bold' : '' }}"
                        href="{{ route('kasir.index') }}">
-
-                        Dashboard
-
+                        Custom Order
                     </a>
 
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3 {{ Request::is('data-pesanan*') ? 'active fw-bold' : '' }}" href="{{ route('kasir.pesanan') }}">
+                        Data Pesanan
+                    </a>
                 </li>
 
                 {{-- PROFILE --}}

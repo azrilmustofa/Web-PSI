@@ -102,11 +102,14 @@ Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth')-
 // Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 Route::get('/profile/detail/{id}', [ProfileController::class, 'getDetail'])->middleware('auth');
 Route::middleware(['auth', 'kasir'])->group(function () {
-
-    Route::get('/dashboard-kasir', [CustomOrderController::class, 'index'])
+    // --- 1. HALAMAN CUSTOM ORDER ---
+    Route::get('/custom-order', [CustomOrderController::class, 'index'])
         ->name('kasir.index');
-
     Route::post('/custom-order/{id}/status', [CustomOrderController::class, 'status'])
         ->name('custom.status');
-
+    Route::get('/data-pesanan', [pesanancontroller::class, 'pesanan'])
+        ->name('kasir.pesanan');
+    // Memproses perubahan status pesanan reguler
+    Route::post('/data-pesanan/{id}/status', [pesanancontroller::class, 'updateStatus'])
+        ->name('pesanan.status');
 });

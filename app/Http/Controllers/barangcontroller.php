@@ -44,7 +44,7 @@ class barangcontroller extends Controller
         $request->validate([
             'nama_barang' => 'required|string|max:255',
             'kategori_id' => 'required|exists:kategoris,id',
-            'bahan_id'    => 'required|exists:bahans,id', // Validasi bahan_id
+            'bahan_id'    => 'required|exists:bahans,id',
             'harga'       => 'required|numeric|min:0',
             'stok'        => 'required|integer|min:0',
             'gambar'      => 'required|image|mimes:jpg,jpeg,png|max:2048'
@@ -53,7 +53,7 @@ class barangcontroller extends Controller
         $data = new barang();
         $data->nama_barang = $request->nama_barang;
         $data->kategori_id = $request->kategori_id;
-        $data->bahan_id    = $request->bahan_id; // Simpan ID Bahan
+        $data->bahan_id    = $request->bahan_id; 
         $data->harga       = $request->harga;
         $data->ukuran      = $request->ukuran;
         $data->stok        = $request->stok;
@@ -63,7 +63,7 @@ class barangcontroller extends Controller
             $file = $request->file('gambar');
             $namaFile = time() . '_' . $file->getClientOriginalName(); 
             $file->storeAs('barang', $namaFile, 'public');
-            $data->gambar = 'barang/' . $namaFile;
+            $data->gambar = $namaFile;
         }
 
         $data->save();

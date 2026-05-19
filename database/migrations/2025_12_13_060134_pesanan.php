@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->dateTime('tanggal');
-            $table->integer('status'); // 0 = keranjang, 1 = checkout
+            $table->integer('status'); 
             $table->integer('jumlah_harga');
             $table->string('kode');
             $table->timestamps();

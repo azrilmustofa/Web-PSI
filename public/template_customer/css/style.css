@@ -1033,12 +1033,11 @@ input:-webkit-autofill:active  {
         color: #fff;
     }
 
-    /* Badge stok */
     .badge-stok-ada   { background: #e6f4ea; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
     .badge-stok-habis { background: #fdecea; color: #c62828; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
 
 
-    /* ===== PAGINATION ===== */
+    
     .pagination {
         display: flex !important;
         flex-direction: row !important;

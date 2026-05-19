@@ -4,21 +4,40 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\barang;
-use App\Models\pesanan;
+use App\Models\pesanan; // Menggunakan model pesanan (huruf kecil sesuai project kamu)
 use App\Models\detail_pesanan;
-
 use Illuminate\Support\Facades\Auth;
 
 class pesanancontroller extends Controller
 {
-    // ===============================
-    // TAMBAH CEPAT (ICON CROSS)
-    // ===============================
+// 1. Menampilkan halaman pesanan reguler ke kasir
+public function pesanan()
+{
+    // Mengambil pesanan yang bukan lagi di dalam keranjang (status 1, 2, 3, 4)
+    $data_pesanan = pesanan::where('status', '>', 0)
+        ->orderBy('updated_at', 'desc')
+        ->get();
+    
+    // Mengarahkan ke file blade pesanan reguler
+    return view('kasir.pesanan', compact('data_pesanan'));
+}
+
+// 2. Memproses update status pesanan dari select dropdown kasir
+public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|integer|in:1,2,3,4',
+    ]);
+
+    $pesanan = pesanan::findOrFail($id);
+    $pesanan->status = $request->status;
+    $pesanan->save();
+
+    return redirect()->back()->with('success', 'Status pesanan #' . $pesanan->kode . ' berhasil diperbarui!');
+}
     public function quickAdd(Request $request, $id)
     {
-        // Baca quantity dari request, default 1
         $jumlahPesan = max(1, (int) $request->input('quantity', 1));
-
         $barang = barang::findOrFail($id);
 
         if ($jumlahPesan > $barang->stok) {
@@ -108,12 +127,10 @@ class pesanancontroller extends Controller
     public function tambah($id)
     {
         $item = detail_pesanan::findOrFail($id);
-
         $item->jumlah += 1;
         $item->jumlah_harga = $item->jumlah * $item->barang->harga;
         $item->save();
 
-        // update total keranjang
         $keranjang = $item->pesanan;
         $keranjang->jumlah_harga = $keranjang->detail->sum('jumlah_harga');
         $keranjang->save();
@@ -130,11 +147,9 @@ class pesanancontroller extends Controller
             $item->jumlah_harga = $item->jumlah * $item->barang->harga;
             $item->save();
         } else {
-            // kalau jumlah 1, langsung hapus
             $item->delete();
         }
 
-        // update total keranjang
         $keranjang = $item->pesanan;
         $keranjang->jumlah_harga = $keranjang->detail->sum('jumlah_harga');
         $keranjang->save();
@@ -142,9 +157,6 @@ class pesanancontroller extends Controller
         return back()->with('success', 'Jumlah dikurangi');
     }
 
-
-
-   
     public function checkout()
     {
         $pesanan = pesanan::where('user_id', Auth::id())
@@ -158,15 +170,11 @@ class pesanancontroller extends Controller
         return view('customer.chart', compact('pesanan', 'pesanan_details'));
     }
 
-    // ===============================
-    // HAPUS ITEM KERANJANG
-    // ===============================
     public function hapus($id)
     {
         $detail = detail_pesanan::findOrFail($id);
         $pesanan = pesanan::findOrFail($detail->pesanan_id);
 
-        // kurangi total harga pesanan
         $pesanan->jumlah_harga -= $detail->jumlah_harga;
 
         if ($pesanan->jumlah_harga < 0) {
@@ -174,16 +182,12 @@ class pesanancontroller extends Controller
         }
 
         $pesanan->save();
-
-        // hapus item
         $detail->delete();
 
         return redirect()->route('customer.checkout')
             ->with('success', 'Barang berhasil dihapus dari keranjang');
     }
 
-
-    // Ganti method bayar() di pesanancontroller.php
     public function bayar(Request $request)
     {
         $request->validate([
@@ -214,9 +218,8 @@ class pesanancontroller extends Controller
             $item->barang->save();
         }
 
-        // Simpan data pengiriman & pembayaran ke pesanan
         $pesanan->update([
-            'status'            => 1,
+            'status'            => 1, // Berubah dari keranjang (0) ke Pending (1)
             'nama_penerima'     => $request->nama_penerima,
             'no_telepon'        => $request->no_telepon,
             'alamat'            => $request->alamat,
@@ -229,5 +232,4 @@ class pesanancontroller extends Controller
         return redirect()->route('customer.checkout')
             ->with('success', 'Pembayaran berhasil! Pesanan sedang diproses.');
     }
-
 }

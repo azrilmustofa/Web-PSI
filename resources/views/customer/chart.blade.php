@@ -127,7 +127,7 @@
                             @foreach ($pesanan->detail as $item)
                             <div class="d-flex align-items-center gap-3 mb-3 pb-3"
                                  style="border-bottom: 1px dashed #d8cfc8;">
-                                <img src="{{ asset('storage/'.$item->barang->gambar) }}"
+                                <img src="{{ asset('storage/barang/'.$item->barang->gambar) }}"
                                      width="60" height="60" class="rounded"
                                      style="object-fit: cover; flex-shrink: 0;">
                                 <div class="flex-grow-1">
@@ -193,7 +193,7 @@
                             </h6>
 
                             <div class="row g-2 mb-3">
-                                <div class="col-4">
+                                <div class="col-6">
                                     <input type="radio" class="btn-check" name="metode_pembayaran"
                                            id="pay_transfer" value="Transfer Bank" required>
                                     <label class="btn btn-outline-secondary w-100 py-3 metode-label" for="pay_transfer">
@@ -201,15 +201,7 @@
                                         Transfer Bank
                                     </label>
                                 </div>
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="metode_pembayaran"
-                                           id="pay_cod" value="COD">
-                                    <label class="btn btn-outline-secondary w-100 py-3 metode-label" for="pay_cod">
-                                        <i class="mb-1"></i>
-                                        COD
-                                    </label>
-                                </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <input type="radio" class="btn-check" name="metode_pembayaran"
                                            id="pay_ewallet" value="E-Wallet">
                                     <label class="btn btn-outline-secondary w-100 py-3 metode-label" for="pay_ewallet">
