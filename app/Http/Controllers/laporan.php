@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\pesanan;
+use App\Models\CustomOrder; 
+
 class laporan extends Controller
 {
     public function produk()
@@ -18,13 +20,25 @@ class laporan extends Controller
 
     public function index()
     {
-        $data = pesanan::with('user')
-            ->where('status', 1)
-            ->orderBy('tanggal', 'desc')
-            ->get();
+        $pesanan_biasa = pesanan::with('user')
+            ->where('status', '>=', 1)
+            ->get()
+            ->map(function ($item) {
+                $item->jenis_pesanan = 'Reguler';
+                return $item;
+            });
+
+        $custom_order = CustomOrder::with('user')
+            ->whereIn('status', [2, 3, 4])
+            ->where('estimasi_harga', '>', 0)
+            ->get()
+            ->map(function ($item) {
+                $item->jenis_pesanan = 'Custom Order';
+                return $item;
+            });
+
+        $data = $pesanan_biasa->concat($custom_order)->sortByDesc('tanggal');
 
         return view('barang.laporan', compact('data'));
     }
-
 }
-

@@ -1,6 +1,6 @@
 @extends('layouts.master_kasir')
 
-@section('title', 'Dashboard Kasir')
+@section('title', 'Custom Order')
 
 @section('content')
 
@@ -11,7 +11,7 @@
 
         <div>
             <h2 class="fw-bold mb-1">
-                Dashboard Kasir
+                Custom Order
             </h2>
 
             <p class="text-muted mb-0">

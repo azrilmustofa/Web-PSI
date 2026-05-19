@@ -1,6 +1,6 @@
 @extends('layouts.master_kasir')
 
-@section('title', 'Dashboard Pesanan')
+@section('title', 'Data Pesanan')
 
 @section('content')
 <div class="container py-5">
@@ -8,7 +8,7 @@
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h2 class="fw-bold mb-1">Dashboard Pesanan</h2>
+            <h2 class="fw-bold mb-1">Data Pesanan</h2>
             <p class="text-muted mb-0">Kelola pesanan reguler customer</p>
         </div>
     </div>
