@@ -12,27 +12,44 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('custom_orders', function (Blueprint $table) {
-    $table->id();
 
-    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->id();
 
-    $table->string('jenis_furniture');
-    $table->string('jenis_kayu');
-    $table->string('gambar', 255)->nullable();
-    $table->string('ukuran');
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
 
-    $table->text('catatan')->nullable();
+            $table->string('jenis_furniture');
 
-    $table->bigInteger('estimasi_harga')->nullable();
+            $table->string('jenis_kayu');
 
-    $table->enum('status', [
-        'pending',
-        'diproses',
-        'selesai'
-    ])->default('pending');
+            $table->string('gambar', 255)->nullable();
 
-    $table->timestamps();
-});
+            $table->string('ukuran');
+
+            $table->text('catatan')->nullable();
+
+            $table->bigInteger('estimasi_harga')->nullable();
+
+            $table->enum('status', [
+                'pending',
+                'diproses',
+                'selesai'
+            ])->default('pending');
+
+            // MIDTRANS
+            $table->string('snap_token')->nullable();
+
+            $table->string('payment_status')
+                ->default('pending');
+
+            $table->string('transaction_id')->nullable();
+
+            $table->string('midtrans_order_id')->nullable();
+
+            $table->timestamps();
+
+        });
     }
 
     /**

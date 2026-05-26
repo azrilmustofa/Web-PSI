@@ -15,6 +15,7 @@ use App\Http\Controllers\PaymentController;
 
 
 
+
 // Ganti Route::post menjadi Route::put
 Route::put('/reset-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 Route::middleware('auth')->get('/redirect-role', function () {
@@ -70,19 +71,21 @@ Route::middleware(['auth','customer'])->group(function () {
     Route::post('/checkout/tambah/{id}', [pesananController::class, 'tambah'])->name('checkout.tambah');
     Route::post('/checkout/kurang/{id}', [pesananController::class, 'kurang'])->name('checkout.kurang');
 
-    // midtrans
-    Route::get('/payment-success', function () {return "Pembayaran Berhasil";});   
-    Route::get('/payment', [PaymentController::class, 'index']);
 
-    Route::get('/payment-token', [PaymentController::class, 'token']);
-    Route::get(
-    '/midtrans/payment/{id}',
-    [PaymentController::class, 'payment']
-    )->name('midtrans.payment');
+    // Payment routes
+    Route::middleware('auth')->group(function () {
+        Route::get('/payment/{id}', [PaymentController::class, 'show'])
+            ->name('payment.show');
+        Route::get('/payment/{id}/success', [PaymentController::class, 'success'])
+            ->name('payment.success');
+        Route::get('/payment/{id}/failed', [PaymentController::class, 'failed'])
+            ->name('payment.failed');
+    });
 
-    Route::get('/payment/{id}', [PaymentController::class, 'show'])
-    ->name('payment.show');
-    
+    // Midtrans webhook — tanpa CSRF
+    Route::post('/midtrans/callback', [PaymentController::class, 'callback'])
+        ->name('midtrans.callback');
+        
 
 
 

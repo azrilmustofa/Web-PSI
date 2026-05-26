@@ -9,12 +9,29 @@ class CustomOrder extends Model
     protected $fillable = [
 
         'user_id',
+
         'jenis_furniture',
+
         'jenis_kayu',
+
         'gambar',
+
         'ukuran',
+
         'catatan',
-        'status'
+
+        'estimasi_harga',
+
+        'status',
+
+        // MIDTRANS
+        'snap_token',
+
+        'payment_status',
+
+        'transaction_id',
+
+        'midtrans_order_id'
 
     ];
 
