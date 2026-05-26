@@ -37,7 +37,7 @@
                         @php
                             // Jika ada gambar di DB pakai itu, jika tidak pakai default
                             $gambar = $cat->gambar
-                                ? 'storage/barang/' . $cat->gambar
+                                ? 'storage/' . $cat->gambar
                                 : 'template_customer/images/asset_cat/img_default.jpg';
                         @endphp
                         <img src="{{ asset($gambar) }}" class="category-img" alt="{{ $cat->nama_kategori }}">

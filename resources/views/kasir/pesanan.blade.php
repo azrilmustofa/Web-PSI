@@ -57,7 +57,7 @@
                                 Rp {{ number_format($item->jumlah_harga, 0, ',', '.') }}
                             </td>
                             <td>
-                                <span class="badge bg-secondary text-white">{{ $item->metode_pembayaran }}</span>
+                                <span>{{ $item->metode_pembayaran }}</span>
                             </td>
                             <td>
                                 {{-- Action diarahkan ke route pesanan.status yang menggunakan POST --}}

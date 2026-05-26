@@ -16,50 +16,33 @@ class PaymentController extends Controller
         $custom = CustomOrder::findOrFail($id);
 
         // CONFIG MIDTRANS
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = false;
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
+Config::$serverKey = env('MIDTRANS_SERVER_KEY'); 
+                Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false); 
+                Config::$isSanitized = true;
+                Config::$is3ds = true;
 
-        // DATA TRANSAKSI
-        $params = [
+               $params = array(
+                    'transaction_details' => array(
+                        'order_id' => 'CUSTOM-' . $custom->id . '-' . time(),
+                        'gross_amount' => (int) $custom->estimasi_harga,
+                    ),
 
-            'transaction_details' => [
+                    'customer_details' => array(
+                        'first_name' => auth()->user()->name,
+                        'email' => auth()->user()->email ?? 'pelanggan@example.com',
+                    ),
 
-                'order_id' => 'CUSTOM-' . $custom->id . '-' . time(),
+                    'item_details' => array(
+                        array(
+                            'id' => 'CUSTOM-' . $custom->id,
+                            'price' => (int) $custom->estimasi_harga,
+                            'quantity' => 1,
+                            'name' => $custom->jenis_furniture,
+                        )
+                    )
+                );
 
-                'gross_amount' => (int) $custom->estimasi_harga,
-
-            ],
-
-            'customer_details' => [
-
-                'first_name' => auth()->user()->name,
-
-                'email' => auth()->user()->email,
-
-            ],
-
-            'item_details' => [
-
-                [
-
-                    'id' => $custom->id,
-
-                    'price' => (int) $custom->estimasi_harga,
-
-                    'quantity' => 1,
-
-                    'name' => $custom->jenis_furniture,
-
-                ]
-
-            ]
-
-        ];
-
-        // GENERATE SNAP TOKEN
-        $snapToken = Snap::getSnapToken($params);
+                $snapToken = Snap::getSnapToken($params);
 
         return view(
             'payment.payment',

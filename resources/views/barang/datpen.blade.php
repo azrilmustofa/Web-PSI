@@ -91,19 +91,19 @@
 
                                 @if($user->role == 'admin')
 
-                                    <span class="badge bg-danger px-3 py-2 rounded-pill">
+                                    <span>
                                         Admin
                                     </span>
 
                                 @elseif($user->role == 'kasir')
 
-                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+                                    <span>
                                         Kasir
                                     </span>
 
                                 @else
 
-                                    <span class="badge bg-success px-3 py-2 rounded-pill">
+                                    <span>
                                         Customer
                                     </span>
 
