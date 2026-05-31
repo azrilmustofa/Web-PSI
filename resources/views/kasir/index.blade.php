@@ -118,12 +118,14 @@
                                     @csrf
 
                                     {{-- INPUT HARGA --}}
-                                    <input type="number"
-                                           name="estimasi_harga"
-                                           class="form-control"
-                                           placeholder="Input harga"
-                                           value="{{ $item->estimasi_harga }}"
-                                           required>
+                                    <input type="text"
+                                        name="estimasi_harga"
+                                        class="form-control"
+                                        placeholder="Input harga"
+                                        value="{{ $item->estimasi_harga }}"
+                                        inputmode="numeric"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                        required>
 
                                     {{-- STATUS --}}
                                     <select name="status"
@@ -131,7 +133,7 @@
 
                                         <option value="pending"
                                             {{ $item->status == 'pending' ? 'selected' : '' }}>
-                                            Pending
+                                            Menunggu
                                         </option>
 
                                         <option value="diproses"

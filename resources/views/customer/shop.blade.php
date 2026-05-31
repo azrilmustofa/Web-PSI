@@ -6,8 +6,10 @@
 <div class="slider-wrapper">
     <div class="slider-container" id="sliderContainer">
         <div class="slide active" style="background-image: url('{{ asset('template_customer/images/slide1.png') }}')"></div>
-        <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide2.jpg') }}')"></div>
-        <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide3.jpg') }}')"></div>
+        <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide2.png') }}')"></div>
+        <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide3.png') }}')"></div>
+        <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide4.png') }}')"></div>
+        <div class="slide" style="background-image: url('{{ asset('template_customer/images/slide5.png') }}')"></div>
     </div>
     <button class="slider-btn prev" id="prevBtn" aria-label="Previous slide">&#10094;</button>
     <button class="slider-btn next" id="nextBtn" aria-label="Next slide">&#10095;</button>
@@ -15,6 +17,8 @@
         <span class="dot active" data-index="0"></span>
         <span class="dot" data-index="1"></span>
         <span class="dot" data-index="2"></span>
+        <span class="dot" data-index="3"></span>
+        <span class="dot" data-index="4"></span>
     </div>
 </div>
 @endsection
@@ -284,7 +288,7 @@
             slides[current].classList.add('active');
             dots[current].classList.add('active');
         }
-        function autoPlay() { timer = setInterval(() => goTo(current + 1), 4000); }
+        function autoPlay() { timer = setInterval(() => goTo(current + 1), 7000); }
         function resetTimer() { clearInterval(timer); autoPlay(); }
 
         document.getElementById('prevBtn').addEventListener('click', function () { goTo(current - 1); resetTimer(); });

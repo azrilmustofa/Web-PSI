@@ -3,7 +3,7 @@
 @section('title','Keranjang')
 
 @section('content')
-<div class="container mt-4">
+<div class="checkout-page">
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -285,16 +285,6 @@
                                 </div>
                             </div>
 
-                            <hr style="border-color: #e0d6cc;">
-
-                            <h6 class="fw-bold mb-3" style="color: #3b5d50;">
-                                Metode Pembayaran
-                            </h6>
-
-                            <div class="alert alert-info py-2" style="font-size:0.85rem;">
-                                Pembayaran akan diproses melalui Midtrans. Kamu bisa memilih metode pembayaran seperti transfer bank, e-wallet, QRIS, dan lainnya setelah klik tombol konfirmasi.
-                            </div>
-
                             <div class="mb-2">
                                 <label class="form-label fw-semibold" style="font-size:0.88rem;">
                                     Catatan (opsional)
@@ -453,4 +443,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+@endpush
+@push('styles')
+<link rel="stylesheet" href="{{ asset('template_customer/css/style.css') }}">
+
+<style>
+    .checkout-page {
+        min-height: 60vh;
+        padding-top: 20px;
+        padding-bottom: 60px;
+    }
+</style>
 @endpush
