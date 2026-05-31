@@ -196,7 +196,7 @@
                                         <span class="badge badge-status"
                                               style="background-color:#f9bf29;color:black;">
 
-                                            Pending
+                                            Diproses
 
                                         </span>
 
@@ -205,7 +205,7 @@
                                         <span class="badge badge-status"
                                               style="background-color:#3b5d50;color:white;">
 
-                                            Diproses
+                                            DiKirim
 
                                         </span>
 
@@ -214,21 +214,10 @@
                                         <span class="badge badge-status"
                                               style="background-color:#6c757d;color:white;">
 
-                                            Dikirim
-
-                                        </span>
-
-                                        @elseif($pesanan->status == 4)
-
-                                        <span class="badge badge-status"
-                                              style="background-color:#198754;color:white;">
-
                                             Selesai
 
                                         </span>
-
                                         @endif
-
                                     </td>
                                     <td>
                                         <button type="button"
