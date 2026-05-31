@@ -36,7 +36,7 @@
                 <p class="mb-4">Memiliki berbagai pilihan untuk anda, dengan kualitas yang terbaik.</p>
             </div>
             <!-- End Column 1 -->
-
+@if(isset($bestSeller) && $bestSeller->count() > 0)
             <!-- Start Column 2 — Best Seller dengan Popup -->
             @foreach($bestSeller as $item)
             <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
@@ -54,7 +54,9 @@
                             '{{ addslashes($item->deskripsi ?? '-') }}',
                             {{ $item->id }}
                         )">
-                    <img src="{{ asset('storage/barang/'.$item->gambar) }}" class="img-fluid product-thumbnail">
+                    <img src="{{ asset('storage/barang/'.$item->gambar) }}"
+                        class="img-fluid product-thumbnail best-seller-img"
+                        alt="{{ $item->nama_barang }}">
                     <h3 class="product-title">{{ $item->nama_barang }}</h3>
                     <strong class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</strong>
                     <p class="text-muted">Terjual {{ $item->total_terjual }}x</p>
@@ -65,6 +67,7 @@
             </div>
             @endforeach
             <!-- End Column 2 -->
+             @endif
 
         </div>
     </div>
@@ -284,48 +287,7 @@
 
 {{-- ===== STYLES ===== --}}
 @push('styles')
-<style>
-    /* Hilangkan arrow input number */
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    /* Input qty */
-    .qty-input {
-        width: 70px;
-        font-size: 1rem;
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    /* Tombol qty +/- */
-    .btn-qty {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: 2px solid #3b5d50;
-        background: #fff;
-        color: #3b5d50;
-        font-size: 1.1rem;
-        font-weight: 700;
-        cursor: pointer;
-        line-height: 1;
-        transition: all 0.2s;
-    }
-    .btn-qty:hover {
-        background: #3b5d50;
-        color: #fff;
-    }
-
-    /* Badge stok */
-    .badge-stok-ada   { background: #e6f4ea; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
-    .badge-stok-habis { background: #fdecea; color: #c62828; padding: 3px 10px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
-</style>
+<link rel="stylesheet" href="{{ asset('template_customer/css/style.css') }}">
 @endpush
 
 {{-- ===== SCRIPTS ===== --}}

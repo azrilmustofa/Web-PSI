@@ -1,122 +1,6 @@
 @extends('layouts.master_admin') 
 
 @section('content')
-<style>
-    /* Latar belakang dengan dekorasi agar tidak kosong */
-    .profile-page-wrapper {
-        min-height: 85vh;
-        background-color: #f4f7f6;
-        background-image: radial-gradient(#3b5d50 0.5px, transparent 0.5px);
-        background-size: 20px 20px; /* Efek titik-titik halus */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* Elemen dekoratif tambahan */
-    .bg-circle {
-        position: absolute;
-        background: rgba(59, 93, 80, 0.03);
-        border-radius: 50%;
-        z-index: 0;
-    }
-
-    .profile-card {
-        background: #ffffff;
-        border-radius: 24px;
-        z-index: 1;
-        width: 100%;
-        max-width: 850px; /* Lebarkan sedikit untuk layout 2 kolom */
-        display: flex;
-        flex-wrap: wrap;
-        overflow: hidden;
-    }
-
-    /* Bagian Kiri: Visual */
-    .profile-side-visual {
-        flex: 1;
-        background: linear-gradient(135deg, #3b5d50 0%, #2d463d 100%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 40px;
-        color: white;
-        min-width: 300px;
-    }
-
-    .avatar-massive {
-        width: 120px;
-        height: 120px;
-        background: #f9bf29;
-        border: 6px solid rgba(255,255,255,0.2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 50px;
-        font-weight: 800;
-        margin-bottom: 20px;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-    }
-
-    /* Bagian Kanan: Detail */
-    .profile-side-content {
-        flex: 1.5;
-        padding: 50px;
-        background: white;
-        min-width: 350px;
-    }
-
-    .info-group {
-        margin-bottom: 25px;
-    }
-
-    .info-label {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #94a3b8;
-        font-weight: 700;
-        display: block;
-        margin-bottom: 8px;
-    }
-
-    .info-value {
-        display: flex;
-        align-items: center;
-        padding: 15px;
-        background: #f8fafc;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        color: #1e293b;
-        font-weight: 600;
-    }
-
-    .btn-action {
-        background: #3b5d50;
-        color: white;
-        border: none;
-        padding: 15px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: block;
-        text-align: center;
-    }
-
-    .btn-action:hover {
-        background: #f9bf29;
-        color: #3b5d50;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(249, 191, 41, 0.2);
-    }
-</style>
 
 <div class="profile-page-wrapper">
     <!-- Dekorasi Latar Belakang -->
@@ -178,4 +62,7 @@
         </div>
     </div>
 </div>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('template_admin/css/style.css') }}">
+@endpush
 @endsection

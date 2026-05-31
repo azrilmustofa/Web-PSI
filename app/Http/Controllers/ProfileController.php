@@ -89,49 +89,54 @@ class ProfileController extends Controller
         );
     }
 
-    /**
-     * Detail Pesanan AJAX
-     */
-    public function getDetail($id)
-    {
-        try {
+   public function getDetail($id)
+{
+    try {
+        $pesanan = \DB::table('pesanan')
+            ->where('id', $id)
+            ->where('user_id', \Auth::id())
+            ->where('status', '>', 0)
+            ->first();
 
-            $details = \DB::table('detail_pesanan')
-                ->join('barang', 'barang.id', '=', 'detail_pesanan.barang_id')
-                ->where('detail_pesanan.pesanan_id', $id)
-                ->select(
-                    'barang.nama_barang',
-                    'detail_pesanan.jumlah',
-                    'detail_pesanan.jumlah_harga'
-                )
-                ->get();
-
-            $pesanan = \DB::table('pesanan')
-                ->where('id', $id)
-                ->first();
-
-            if (!$pesanan) {
-
-                return response()->json([
-                    'error' => 'Data pesanan tidak ditemukan'
-                ], 404);
-            }
-
+        if (!$pesanan) {
             return response()->json([
-                'details' => $details,
-                'total' => number_format(
-                    $pesanan->jumlah_harga,
-                    0,
-                    ',',
-                    '.'
-                )
-            ]);
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
+                'error' => 'Data pesanan tidak ditemukan'
+            ], 404);
         }
+
+        $details = \DB::table('detail_pesanan')
+            ->leftJoin('barang', 'barang.id', '=', 'detail_pesanan.barang_id')
+            ->where('detail_pesanan.pesanan_id', $id)
+            ->select(
+                'barang.nama_barang',
+                'barang.harga',
+                'detail_pesanan.jumlah',
+                'detail_pesanan.jumlah_harga'
+            )
+            ->get();
+
+        return response()->json([
+            'pesanan' => [
+                'kode' => $pesanan->kode,
+                'tanggal' => \Carbon\Carbon::parse($pesanan->tanggal)->format('d M Y H:i'),
+                'nama_penerima' => $pesanan->nama_penerima,
+                'no_telepon' => $pesanan->no_telepon,
+                'alamat' => $pesanan->alamat,
+                'kota' => $pesanan->kota,
+                'kode_pos' => $pesanan->kode_pos,
+                'metode_pembayaran' => $pesanan->metode_pembayaran
+                    ? strtoupper(str_replace('_', ' ', $pesanan->metode_pembayaran))
+                    : 'BELUM ADA',
+                'catatan' => $pesanan->catatan,
+            ],
+            'details' => $details,
+            'total' => number_format($pesanan->jumlah_harga, 0, ',', '.')
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 }

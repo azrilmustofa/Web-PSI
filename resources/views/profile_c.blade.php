@@ -163,6 +163,7 @@
                                     <th>Tanggal</th>
                                     <th>Total</th>
                                     <th>Status</th>
+                                    <th>Aksi</th>
 
                                 </tr>
 
@@ -229,6 +230,15 @@
                                         @endif
 
                                     </td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-dwj btn-sm btn-detail-pesanan"
+                                                data-id="{{ $pesanan->id }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalDetailPesanan">
+                                            Detail
+                                        </button>
+                                    </td>
 
                                 </tr>
 
@@ -236,7 +246,7 @@
 
                                 <tr>
 
-                                    <td colspan="4"
+                                    <td colspan="5"
                                         class="text-center text-muted py-5">
 
                                         Belum ada transaksi
@@ -252,7 +262,93 @@
                         </table>
 
                     </div>
+                    <div class="modal fade" id="modalDetailPesanan" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
 
+                                <div class="modal-header" style="background-color:#3b5d50;">
+                                    <h5 class="modal-title text-white fw-bold">
+                                        Detail Pesanan
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body p-4">
+
+                                    <div id="detail-loading" class="text-center py-5">
+                                        <div class="spinner-border text-success"></div>
+                                        <p class="text-muted mt-3 mb-0">Memuat detail pesanan...</p>
+                                    </div>
+
+                                    <div id="detail-content" class="d-none">
+
+                                        <div class="row mb-4">
+                                            <div class="col-md-6 mb-3">
+                                                <small class="text-muted d-block">Kode Pesanan</small>
+                                                <div class="fw-bold" id="detail-kode"></div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <small class="text-muted d-block">Tanggal</small>
+                                                <div class="fw-semibold" id="detail-tanggal"></div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <small class="text-muted d-block">Metode Pembayaran</small>
+                                                <div class="fw-semibold" id="detail-metode"></div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <small class="text-muted d-block">Total Pembayaran</small>
+                                                <div class="fw-bold text-success">
+                                                    Rp <span id="detail-total"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="fw-bold mb-2">Alamat Pengiriman</h6>
+
+                                        <div class="p-3 rounded-3 mb-4" style="background:#f8f9fa;">
+                                            <div class="fw-bold" id="detail-penerima"></div>
+                                            <div class="text-muted small mb-1" id="detail-telepon"></div>
+                                            <div id="detail-alamat"></div>
+                                            <div class="text-muted small" id="detail-kota"></div>
+                                            <div class="mt-2" id="detail-catatan"></div>
+                                        </div>
+
+                                        <h6 class="fw-bold mb-3">Produk yang Dibeli</h6>
+
+                                        <div class="table-responsive">
+                                            <table class="table align-middle">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Produk</th>
+                                                        <th class="text-center">Jumlah</th>
+                                                        <th class="text-end">Harga</th>
+                                                        <th class="text-end">Subtotal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="detail-produk"></tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    <div id="detail-error" class="alert alert-danger d-none"></div>
+
+                                </div>
+
+                                <div class="modal-footer" style="background:#f8f9fa;">
+                                    <button type="button"
+                                            class="btn btn-secondary rounded-pill px-4"
+                                            data-bs-dismiss="modal">
+                                        Tutup
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- CUSTOM ORDER --}}
@@ -505,67 +601,79 @@
 
 </div>
 
-<style>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('template_customer/css/style.css') }}">
+@endpush
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.btn-detail-pesanan');
 
-:root{
-    --primary-color:#3b5d50;
-    --secondary-color:#f9bf29;
-    --light-bg:#f8f9fa;
-}
+    buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
 
-.container{
-    font-family:'Poppins',sans-serif;
-}
+            document.getElementById('detail-loading').classList.remove('d-none');
+            document.getElementById('detail-content').classList.add('d-none');
+            document.getElementById('detail-error').classList.add('d-none');
+            document.getElementById('detail-produk').innerHTML = '';
 
-.card-profile{
-    border-radius:15px;
-}
+            fetch('/profile/detail/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw data;
+                    }
 
-.nav-pills .nav-link{
-    color:#495057;
-    font-weight:500;
-    border-radius:10px;
-}
+                    document.getElementById('detail-kode').innerText = data.pesanan.kode ?? '-';
+                    document.getElementById('detail-tanggal').innerText = data.pesanan.tanggal ?? '-';
+                    document.getElementById('detail-metode').innerText = data.pesanan.metode_pembayaran ?? '-';
+                    document.getElementById('detail-total').innerText = data.total ?? '0';
 
-.nav-pills .nav-link.active{
-    background-color:var(--primary-color)!important;
-    color:white!important;
-}
+                    document.getElementById('detail-penerima').innerText = data.pesanan.nama_penerima ?? '-';
+                    document.getElementById('detail-telepon').innerText = data.pesanan.no_telepon ?? '-';
+                    document.getElementById('detail-alamat').innerText = data.pesanan.alamat ?? '-';
+                    document.getElementById('detail-kota').innerText =
+                        (data.pesanan.kota ?? '-') + ' (' + (data.pesanan.kode_pos ?? '-') + ')';
 
-.nav-pills .nav-link:hover{
-    background:#f1f1f1;
-}
+                    if (data.pesanan.catatan) {
+                        document.getElementById('detail-catatan').innerHTML =
+                            '<small class="text-muted">Catatan:</small><br>' + data.pesanan.catatan;
+                    } else {
+                        document.getElementById('detail-catatan').innerHTML = '';
+                    }
 
-.custom-input{
-    border-radius:10px!important;
-    padding:12px 15px!important;
-}
+                    let html = '';
 
-.badge-status{
-    padding:6px 12px;
-    border-radius:8px;
-    font-size:12px;
-}
+                    data.details.forEach(function (item) {
+                        const harga = new Intl.NumberFormat('id-ID').format(item.harga ?? 0);
+                        const subtotal = new Intl.NumberFormat('id-ID').format(item.jumlah_harga ?? 0);
 
-.btn-dwj{
-    background-color:var(--primary-color);
-    color:white;
-    border:none;
-    border-radius:10px;
-    padding:10px 20px;
-    font-weight:600;
-}
+                        html += `
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">${item.nama_barang ?? 'Produk sudah dihapus'}</div>
+                                    <small class="text-muted">Dwijaya Mebel Original</small>
+                                </td>
+                                <td class="text-center">${item.jumlah}</td>
+                                <td class="text-end">Rp ${harga}</td>
+                                <td class="text-end fw-bold">Rp ${subtotal}</td>
+                            </tr>
+                        `;
+                    });
 
-.btn-dwj:hover{
-    background-color:#2d463d;
-    color:white;
-}
+                    document.getElementById('detail-produk').innerHTML = html;
 
-.table thead th{
-    background-color:var(--light-bg);
-    color:var(--primary-color);
-}
-
-</style>
-
+                    document.getElementById('detail-loading').classList.add('d-none');
+                    document.getElementById('detail-content').classList.remove('d-none');
+                })
+                .catch(error => {
+                    document.getElementById('detail-loading').classList.add('d-none');
+                    document.getElementById('detail-error').classList.remove('d-none');
+                    document.getElementById('detail-error').innerText =
+                        error.error ?? 'Gagal memuat detail pesanan.';
+                });
+        });
+    });
+});
+</script>
 @endsection

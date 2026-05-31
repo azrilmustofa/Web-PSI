@@ -15,12 +15,16 @@ class pesanan extends Model
         'status',
         'jumlah_harga',
         'kode',
+        'snap_token',
         'nama_penerima',
         'no_telepon',
         'alamat',
         'kota',
         'kode_pos',
         'metode_pembayaran',
+        'payment_status',
+        'transaction_id',
+        'paid_at',
         'catatan'
     ];
 
