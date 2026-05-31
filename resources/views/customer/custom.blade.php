@@ -90,8 +90,6 @@
                     </div>
                 </form>
 
-                <hr>
-
                 <!-- NOTIF BAHAN -->
                 <div id="notif-bahan" class="alert d-none mb-3" role="alert"></div>
 
@@ -99,7 +97,7 @@
                 <form id="formBahan">
                     @csrf
                     <div>
-                        <label class="form-label fw-bold">
+                        <label class="form-group">
                             Nama Bahan <span class="text-danger">*</span>
                         </label>
                         <input type="text"
@@ -117,10 +115,6 @@
                 </form>
 
                 <div class="divider"></div>
-
-                {{-- Section: Referensi Desain --}}
-                <p class="form-section-title">Referensi Desain</p>
-
                 {{-- Gambar --}}
                 <div class="form-group" style="margin-bottom: 1.5rem;">
                     <label for="gambar">Gambar Referensi</label>

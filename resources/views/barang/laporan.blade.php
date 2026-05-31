@@ -39,7 +39,11 @@
                         <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y, H:i') }}</td>
                         <td>{{ $item->user->name ?? '-' }}</td>
                         <td class="fw-bold text-danger">
-                            Rp {{ number_format($item->jumlah_harga, 0, ',', '.') }}
+                            @if($item->jenis_pesanan == 'Reguler')
+                                Rp {{ number_format($item->jumlah_harga, 0, ',', '.') }}
+                            @else
+                                Rp {{ number_format($item->estimasi_harga, 0, ',', '.') }}
+                            @endif
                         </td>
                     </tr>
                     @endforeach
