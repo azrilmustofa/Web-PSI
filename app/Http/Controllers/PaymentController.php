@@ -21,47 +21,95 @@ class PaymentController extends Controller
     /**
      * Tampilkan halaman pembayaran & generate Snap Token
      */
+//     public function show($id)
+//     {
+//         $custom = CustomOrder::findOrFail($id);
+
+//         // CONFIG MIDTRANS
+// Config::$serverKey = env('MIDTRANS_SERVER_KEY'); 
+//                 Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false); 
+//                 Config::$isSanitized = true;
+//                 Config::$is3ds = true;
+
+//                $params = array(
+//                     'transaction_details' => array(
+//                         'order_id' => 'CUSTOM-' . $custom->id . '-' . time(),
+//                         'gross_amount' => (int) $custom->estimasi_harga,
+//                     ),
+
+//                     'customer_details' => array(
+//                         'first_name' => auth()->user()->name,
+//                         'email' => auth()->user()->email ?? 'pelanggan@example.com',
+//                     ),
+
+//                     'item_details' => array(
+//                         array(
+//                             'id' => 'CUSTOM-' . $custom->id,
+//                             'price' => (int) $custom->estimasi_harga,
+//                             'quantity' => 1,
+//                             'name' => $custom->jenis_furniture,
+//                         )
+//                     )
+//                 );
+
+//                 $snapToken = Snap::getSnapToken($params);
+
+//         $custom->update([
+//             'snap_token'        => $snapToken,
+//             'midtrans_order_id' => $midtransOrderId,
+//         ]);
+
+//         return view('payment.show', compact('custom', 'snapToken'));
+//     }
     public function show($id)
     {
         $custom = CustomOrder::findOrFail($id);
 
-        // CONFIG MIDTRANS
-Config::$serverKey = env('MIDTRANS_SERVER_KEY'); 
-                Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false); 
-                Config::$isSanitized = true;
-                Config::$is3ds = true;
+        // Cek apakah estimasi harga sudah ada
+        if (!$custom->estimasi_harga || $custom->estimasi_harga <= 0) {
+            return redirect()->route('profile')
+                ->with('error', 'Estimasi harga belum tersedia.');
+        }
 
-               $params = array(
-                    'transaction_details' => array(
-                        'order_id' => 'CUSTOM-' . $custom->id . '-' . time(),
-                        'gross_amount' => (int) $custom->estimasi_harga,
-                    ),
+        // Jika belum punya Snap Token, buat baru
+        if (!$custom->snap_token) {
 
-                    'customer_details' => array(
-                        'first_name' => auth()->user()->name,
-                        'email' => auth()->user()->email ?? 'pelanggan@example.com',
-                    ),
+            $midtransOrderId = 'CUSTOM-' . $custom->id . '-' . time();
 
-                    'item_details' => array(
-                        array(
-                            'id' => 'CUSTOM-' . $custom->id,
-                            'price' => (int) $custom->estimasi_harga,
-                            'quantity' => 1,
-                            'name' => $custom->jenis_furniture,
-                        )
-                    )
-                );
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $midtransOrderId,
+                    'gross_amount' => (int) $custom->estimasi_harga,
+                ],
 
-                $snapToken = Snap::getSnapToken($params);
+                'customer_details' => [
+                    'first_name' => auth()->user()->name,
+                    'email' => auth()->user()->email,
+                ],
 
-        $custom->update([
-            'snap_token'        => $snapToken,
-            'midtrans_order_id' => $midtransOrderId,
-        ]);
+                'item_details' => [
+                    [
+                        'id' => 'CUSTOM-' . $custom->id,
+                        'price' => (int) $custom->estimasi_harga,
+                        'quantity' => 1,
+                        'name' => $custom->jenis_furniture,
+                    ]
+                ]
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+
+            $custom->update([
+                'snap_token'        => $snapToken,
+                'midtrans_order_id' => $midtransOrderId,
+            ]);
+        } else {
+
+            $snapToken = $custom->snap_token;
+        }
 
         return view('payment.show', compact('custom', 'snapToken'));
     }
-
     /**
      * Callback / Webhook dari Midtrans
      */
@@ -100,12 +148,22 @@ Config::$serverKey = env('MIDTRANS_SERVER_KEY');
     /**
      * Redirect sukses dari Midtrans
      */
+    // public function success($id)
+    // {
+    //     return redirect()->route('profile')
+    //         ->with('success', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
+    // }
     public function success($id)
     {
-        return redirect()->route('profile')
-            ->with('success', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
-    }
+        $custom = CustomOrder::findOrFail($id);
 
+        $custom->update([
+            'payment_status' => 'paid'
+        ]);
+
+        return redirect()->route('profile')
+            ->with('success', 'Pembayaran berhasil.');
+    }
     /**
      * Redirect gagal / cancel dari Midtrans
      */
