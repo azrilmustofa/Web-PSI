@@ -125,6 +125,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('datpen.destroy');
     Route::post('/simpan-kategori', [barangcontroller::class, 'storeKategori'])->name('kategori.store');
     Route::post('/simpan-bahan', [barangcontroller::class, 'storeBahan'])->name('bahan.store');
+    Route::get('/admin/dashboard', [admincontroller::class, 'dashboard'])->name('admin.dashboard');
     
 });
 

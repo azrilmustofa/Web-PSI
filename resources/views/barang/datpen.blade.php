@@ -1,5 +1,5 @@
-@extends('layouts.master_admin')
 
+@extends('layouts.master_admin')
 @section('title', 'Data Pengguna')
 
 @section('content')
